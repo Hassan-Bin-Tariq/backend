@@ -9,7 +9,10 @@ app.use(express.json())
 app.use(express.urlencoded())
 app.use(cors())
 
-const Teachers_emails = ["m.habib@nu.edu.pk", "usman.joyia@nu.edu.pk", "usman.ghous@nu.edu.pk"];
+const Teachers_emails = ["m.habib@nu.edu.pk", "usman.joyia@nu.edu.pk", "usman.ghous@nu.edu.pk",
+"tehreemfatima71@gmail.com",
+"hareemalimalik@gmail.com",
+"hassan.ibnetariq06@gmail.com"];
 const MentorEmail = "tahir@nu.edu.pk";
 
 mongoose.connect("mongodb+srv://hassan:hassan123@cluster0.brlttau.mongodb.net/Mediascape?retryWrites=true&w=majority", {
@@ -103,7 +106,8 @@ app.post("/register",(req,res)=>{
     Teacher.findOne({email: email}, (err, user) => {
         if(user){
             res.send({message: "User already registerd"})
-        } else {
+        } 
+        else {
             if(Teachers_emails.includes(email))
             {
                 const user = new Teacher({
