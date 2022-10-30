@@ -192,9 +192,9 @@ app.post("/GetEventRequest",async (req,res)=>{
     try {
         const results = await Event.find({});
         res.send({message: "Got All Events", event: results})
-      } catch (err) {
+    } catch (err) {
         throw err;
-      }
+    }
 
 })
 
