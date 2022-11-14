@@ -9,12 +9,6 @@ app.use(express.json())
 app.use(express.urlencoded())
 app.use(cors())
 
-const Teachers_emails = ["m.habib@nu.edu.pk", "usman.joyia@nu.edu.pk", "usman.ghous@nu.edu.pk",
-"tehreemfatima71@gmail.com",
-"hareemalimalik@gmail.com",
-"hassan.ibnetariq06@gmail.com"];
-const MentorEmail = "tahir@nu.edu.pk";
-
 mongoose.connect("mongodb+srv://hassan:hassan123@cluster0.brlttau.mongodb.net/Mediascape?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -26,6 +20,14 @@ const teacherSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String
+})
+
+const TeacherEmailsSchema = new mongoose.Schema({
+    email: String,
+})
+
+const MentorrEmailsSchema = new mongoose.Schema({
+    email: String,
 })
 
 const studentSchema = new mongoose.Schema({
@@ -55,16 +57,41 @@ const Student = new mongoose.model("Student", studentSchema)
 const Teacher = new mongoose.model("Teacher", teacherSchema)
 const Mentor = new mongoose.model("Mentor", MentorSchema)
 const Event = new mongoose.model("Event", EventSchema)
+const AllteacherEmails = new mongoose.model("AllteacherEmails", TeacherEmailsSchema)
+const MentorEmail = new mongoose.model("MentorEmail", MentorrEmailsSchema)
 //Routes
 
-app.post("/login",(req,res)=>{
+app.post("/login",async (req,res)=>{
     const { email, password} = req.body
-    if(Teachers_emails.includes(email))
+    let Emailss;
+    let Mentormail;
+    let teachermails = [];
+
+    try { //getting all emails of teachers from back end and changing them into single list
+        Emailss = await AllteacherEmails.find({});
+
+        for (let i = 0; i < Emailss.length; i++) {
+            teachermails.push(Emailss[i].email)
+        }
+        console.log(teachermails);
+    } catch (err) {
+        throw err;
+    }
+
+    try { //Mentor ki email database ma se nikali
+        Mentormail = await MentorEmail.find({});
+        console.log(Mentormail[0].email);
+    } catch (err) {
+        throw err;
+    }
+
+    
+    if(teachermails.includes(email))
     {
         Teacher.findOne({ email: email}, (err, user) => {
             if(user){
                 if(password === user.password ) {
-                    res.send({message: "Login Successfull", user: user})
+                    res.send({message: "Teacher", user: user})
                 } else {
                     res.send({ message: "Password didn't match"})
                 }
@@ -73,12 +100,12 @@ app.post("/login",(req,res)=>{
             }
         })
     }
-    else if(MentorEmail == email)
+    else if(Mentormail[0].email == email)
     {
         Mentor.findOne({ email: email}, (err, user) => {
             if(user){
                 if(password === user.password ) {
-                    res.send({message: "Login Successfull", user: user})
+                    res.send({message: "Mentor", user: user})
                 } else {
                     res.send({ message: "Password didn't match"})
                 }
@@ -91,7 +118,7 @@ app.post("/login",(req,res)=>{
         Student.findOne({ email: email}, (err, user) => {
             if(user){
                 if(password === user.password ) {
-                    res.send({message: "Login Successfull", user: user})
+                    res.send({message: "Student", user: user})
                 } else {
                     res.send({ message: "Password didn't match"})
                 }
@@ -101,14 +128,36 @@ app.post("/login",(req,res)=>{
         })
     }
 })
-app.post("/register",(req,res)=>{
+app.post("/register",async (req,res)=>{
+    let Emailss;
+    let Mentormail;
+    let teachermails = [];
     const { name, email, password} = req.body
+
+    try { //getting all emails of teachers from back end and changing them into single list
+        Emailss = await AllteacherEmails.find({});
+
+        for (let i = 0; i < Emailss.length; i++) {
+            teachermails.push(Emailss[i].email)
+        }
+        console.log(teachermails);
+    } catch (err) {
+        throw err;
+    }
+
+    try { //Mentor ki email database ma se nikali
+        Mentormail = await MentorEmail.find({});
+        console.log(Mentormail[0].email);
+    } catch (err) {
+        throw err;
+    }
+
     Teacher.findOne({email: email}, (err, user) => {
         if(user){
             res.send({message: "User already registerd"})
         } 
         else {
-            if(Teachers_emails.includes(email))
+            if(teachermails.includes(email))
             {
                 const user = new Teacher({
                     name,
@@ -123,7 +172,7 @@ app.post("/register",(req,res)=>{
                     }
                 })
             }
-            else if (email.includes("nu.edu.pk") && email != MentorEmail){
+            else if (email.includes("nu.edu.pk") && email != Mentormail[0].email){
                 const user = new Student({
                     name,
                     email,
@@ -137,7 +186,7 @@ app.post("/register",(req,res)=>{
                     }
                 })
             }
-            else if(email == MentorEmail)
+            else if(email == Mentormail[0].email)
             {
                 const user = new Mentor({
                     name,
@@ -197,8 +246,6 @@ app.post("/GetEventRequest",async (req,res)=>{
     }
 
 })
-
-
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
