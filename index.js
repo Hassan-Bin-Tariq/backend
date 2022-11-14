@@ -51,6 +51,7 @@ const EventSchema = new mongoose.Schema({
     date: String,
     time: String,
     venue: String,
+    status: String,
 })
 
 const Student = new mongoose.model("Student", studentSchema)
@@ -209,7 +210,7 @@ app.post("/register",async (req,res)=>{
 })
 
 app.post("/SendEventRequest",(req,res)=>{
-    const {title,teacherName,teacherEmail,teacherID,description,date,time,venue} = req.body
+    const {title,teacherName,teacherEmail,teacherID,description,date,time,venue,status} = req.body
     Event.findOne({title: title}, (err, event) => {
         if(event){
             res.send({message: "Event already requested"})
@@ -223,7 +224,8 @@ app.post("/SendEventRequest",(req,res)=>{
                 description,
                 date,
                 time,
-                venue
+                venue,
+                status,
             })
             user.save(err => {
                 if(err) {
@@ -246,6 +248,37 @@ app.post("/GetEventRequest",async (req,res)=>{
     }
 
 })
+
+app.post("/StatusAccept",async (req,res)=>{
+
+    const query = { status: "Not Checked" };
+    const update = { $set: { status: "Accepted"}};
+    const options = {};
+    await Event.updateOne(query, update, options);
+
+    try {
+        const results = await Event.find({});
+        res.send({message: "Got All Events", event: results})
+    } catch (err) {
+        throw err;
+    }
+})
+
+app.post("/StatusReject",async (req,res)=>{
+
+    const query = { status: "Not Checked" };
+    const update = { $set: { status: "Rejected"}};
+    const options = {};
+    await Event.updateOne(query, update, options);
+    
+    try {
+        const results = await Event.find({});
+        res.send({message: "Got All Events", event: results})
+    } catch (err) {
+        throw err;
+    }
+})
+
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
