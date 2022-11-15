@@ -25,6 +25,14 @@ const teacherSchema = new mongoose.Schema({
 const TeacherEmailsSchema = new mongoose.Schema({
     email: String,
 })
+const EBEmailsSchema = new mongoose.Schema({
+    email: String,
+    role: String,
+})
+
+const GBEmailsSchema = new mongoose.Schema({
+    email: String,
+})
 
 const MentorrEmailsSchema = new mongoose.Schema({
     email: String,
@@ -54,12 +62,30 @@ const EventSchema = new mongoose.Schema({
     status: String,
 })
 
+const EBSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    password: String
+})
+
+const GBSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    password: String
+})
+
 const Student = new mongoose.model("Student", studentSchema)
 const Teacher = new mongoose.model("Teacher", teacherSchema)
 const Mentor = new mongoose.model("Mentor", MentorSchema)
 const Event = new mongoose.model("Event", EventSchema)
+const ExecutiveBody = new mongoose.model("ExecutiveBody", EBSchema)
+const GeneralBody = new mongoose.model("GeneralBody", GBSchema)
+
 const AllteacherEmails = new mongoose.model("AllteacherEmails", TeacherEmailsSchema)
 const MentorEmail = new mongoose.model("MentorEmail", MentorrEmailsSchema)
+const EBEmails = new mongoose.model("EBEmails", EBEmailsSchema)
+const GBEmails = new mongoose.model("GBEmails", GBEmailsSchema)
+
 //Routes
 
 app.post("/login",async (req,res)=>{
@@ -67,21 +93,45 @@ app.post("/login",async (req,res)=>{
     let Emailss;
     let Mentormail;
     let teachermails = [];
+    let EBmails = [];
+    let GBmails = [];
 
-    try { //getting all emails of teachers from back end and changing them into single list
+    try { //getting all emails of teachers from back end and changing them into single list to chek if teacher is loging in
         Emailss = await AllteacherEmails.find({});
 
         for (let i = 0; i < Emailss.length; i++) {
             teachermails.push(Emailss[i].email)
         }
-        console.log(teachermails);
+        //console.log(teachermails);
     } catch (err) {
         throw err;
     }
 
-    try { //Mentor ki email database ma se nikali
+    try { //Mentor ki email database ma se nikali to check if mentor is loging in
         Mentormail = await MentorEmail.find({});
-        console.log(Mentormail[0].email);
+        //console.log(Mentormail[0].email);
+    } catch (err) {
+        throw err;
+    }
+
+    try { //getting all emails of EBmembers from back end and changing them into single list to check if EB member is loging in
+        Emailss = await EBEmails.find({});
+
+        for (let i = 0; i < Emailss.length; i++) {
+            EBmails.push(Emailss[i].email)
+        }
+        //console.log(EBmails);
+    } catch (err) {
+        throw err;
+    }
+
+    try { //getting all emails of GBmembers from back end and changing them into single list to check if GB member is loging in
+        Emailss = await GBEmails.find({});
+
+        for (let i = 0; i < Emailss.length; i++) {
+            GBmails.push(Emailss[i].email)
+        }
+        //console.log(EBmails);
     } catch (err) {
         throw err;
     }
@@ -93,6 +143,41 @@ app.post("/login",async (req,res)=>{
             if(user){
                 if(password === user.password ) {
                     res.send({message: "Teacher", user: user})
+                } else {
+                    res.send({ message: "Password didn't match"})
+                }
+            } else {
+                res.send({message: "User not registered"})
+            }
+        })
+    }
+    else if(EBmails.includes(email))
+    {
+        const index = EBmails.findIndex(element => { //Getting the index of logged in eb member to get its role to route to that specific page
+            if (element.email === email) {
+                return true;
+            }
+            return false;
+        });
+
+        ExecutiveBody.findOne({ email: email}, (err, user) => {
+            if(user){
+                if(password === user.password ) {
+                    res.send({message: Emailss[index+1].role, user: user})
+                } else {
+                    res.send({ message: "Password didn't match"})
+                }
+            } else {
+                res.send({message: "User not registered"})
+            }
+        })
+    }
+    else if(GBmails.includes(email))
+    {
+        GeneralBody.findOne({ email: email}, (err, user) => {
+            if(user){
+                if(password === user.password ) {
+                    res.send({message: "GeneralBody", user: user})
                 } else {
                     res.send({ message: "Password didn't match"})
                 }
@@ -129,26 +214,51 @@ app.post("/login",async (req,res)=>{
         })
     }
 })
+
 app.post("/register",async (req,res)=>{
     let Emailss;
     let Mentormail;
     let teachermails = [];
+    let EBmails = [];
+    let GBmails = [];
     const { name, email, password} = req.body
 
-    try { //getting all emails of teachers from back end and changing them into single list
+    try { //getting all emails of teachers from back end and changing them into single list to check if teacher is registring
         Emailss = await AllteacherEmails.find({});
 
         for (let i = 0; i < Emailss.length; i++) {
             teachermails.push(Emailss[i].email)
         }
-        console.log(teachermails);
+        ///console.log(teachermails);
     } catch (err) {
         throw err;
     }
 
-    try { //Mentor ki email database ma se nikali
+    try { //Mentor ki email database ma se nikali to checik if mentor is regsitring
         Mentormail = await MentorEmail.find({});
-        console.log(Mentormail[0].email);
+        //console.log(Mentormail[0].email);
+    } catch (err) {
+        throw err;
+    }
+
+    try { //getting all emails of EBmembers from back end and changing them into single list to check if EB member is registring
+        Emailss = await EBEmails.find({});
+
+        for (let i = 0; i < Emailss.length; i++) {
+            EBmails.push(Emailss[i].email)
+        }
+        //console.log(EBmails);
+    } catch (err) {
+        throw err;
+    }
+GeneralBody
+    try { //getting all emails of GBmembers from back end and changing them into single list to check if GB member is registring
+        Emailss = await GBEmails.find({});
+
+        for (let i = 0; i < Emailss.length; i++) {
+            GBmails.push(Emailss[i].email)
+        }
+        //console.log(EBmails);
     } catch (err) {
         throw err;
     }
@@ -169,7 +279,37 @@ app.post("/register",async (req,res)=>{
                     if(err) {
                         res.send(err)
                     } else {
-                        res.send( { message: "Successfully Teacher Registered, Please login now." })
+                        res.send( { message: "Successfully Teacher member Registered, Please login now." })
+                    }
+                })
+            }
+            else if(EBmails.includes(email))
+            {
+                const user = new ExecutiveBody({
+                    name,
+                    email,
+                    password
+                })
+                user.save(err => {
+                    if(err) {
+                        res.send(err)
+                    } else {
+                        res.send( { message: "Successfully EB Registered, Please login now." })
+                    }
+                })
+            }
+            else if(GBmails.includes(email))
+            {
+                const user = new GeneralBody({
+                    name,
+                    email,
+                    password
+                })
+                user.save(err => {
+                    if(err) {
+                        res.send(err)
+                    } else {
+                        res.send( { message: "Successfully GB Registered, Please login now." })
                     }
                 })
             }
