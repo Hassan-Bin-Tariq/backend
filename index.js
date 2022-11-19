@@ -164,7 +164,7 @@ app.post("/login",async (req,res)=>{
         ExecutiveBody.findOne({ email: email}, (err, user) => {
             if(user){
                 if(password === user.password ) {
-                    res.send({message: Emailss[index+1].role, user: user})
+                    res.send({message:"Photography Head", user: user})
                 } else {
                     res.send({ message: "Password didn't match"})
                 }
@@ -389,6 +389,14 @@ app.post("/GetEventRequest",async (req,res)=>{
         throw err;
     }
 
+})
+app.post("/GetAcceptEvent",async(req,res)=>{
+    try {
+        const results = await Event.find({status: "Accepted"});
+        res.send({message: "Got All Events", event: results})
+    } catch (err) {
+        throw err;
+    }
 })
 
 app.post("/StatusAccept",async (req,res)=>{
