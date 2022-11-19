@@ -393,7 +393,11 @@ app.post("/GetEventRequest",async (req,res)=>{
 
 app.post("/StatusAccept",async (req,res)=>{
 
-    const query = { status: "Not Checked" };
+    const {id} = req.body
+    const query = { 
+        _id:id,
+        status: "Not Checked"
+    };
     const update = { $set: { status: "Accepted"}};
     const options = {};
     await Event.updateOne(query, update, options);
@@ -408,7 +412,11 @@ app.post("/StatusAccept",async (req,res)=>{
 
 app.post("/StatusReject",async (req,res)=>{
 
-    const query = { status: "Not Checked" };
+    const {id} = req.body
+    const query = { 
+        _id:id,
+        status: "Not Checked" 
+    };
     const update = { $set: { status: "Rejected"}};
     const options = {};
     await Event.updateOne(query, update, options);
@@ -427,7 +435,8 @@ app.post("/addslots",async (req,res)=>{
     console.log(Email);
     const query = { 
         email:Email,
-        slots: Array };
+        slots: Array 
+    };
     const update = { $set: { slots: zip}};
     const options = {};
     await GeneralBody.updateOne(query, update, options);
