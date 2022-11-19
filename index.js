@@ -71,7 +71,8 @@ const EBSchema = new mongoose.Schema({
 const GBSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+    slots: Object
 })
 
 const Student = new mongoose.model("Student", studentSchema)
@@ -221,7 +222,7 @@ app.post("/register",async (req,res)=>{
     let teachermails = [];
     let EBmails = [];
     let GBmails = [];
-    const { name, email, password} = req.body
+    const { name, email, password, slots} = req.body
 
     try { //getting all emails of teachers from back end and changing them into single list to check if teacher is registring
         Emailss = await AllteacherEmails.find({});
@@ -303,7 +304,8 @@ GeneralBody
                 const user = new GeneralBody({
                     name,
                     email,
-                    password
+                    password,
+                    slots
                 })
                 user.save(err => {
                     if(err) {
@@ -417,6 +419,18 @@ app.post("/StatusReject",async (req,res)=>{
     } catch (err) {
         throw err;
     }
+})
+
+app.post("/addslots",async (req,res)=>{
+
+    const {zip,Email} = req.body
+    console.log(Email);
+    const query = { 
+        email:Email,
+        slots: Array };
+    const update = { $set: { slots: zip}};
+    const options = {};
+    await GeneralBody.updateOne(query, update, options);
 })
 
 app.listen(9002,() => {
