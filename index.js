@@ -57,7 +57,8 @@ const EventSchema = new mongoose.Schema({
     title: String,
     description: String,
     date: String,
-    time: String,
+    StartTime: String,
+    EndTime: String,
     venue: String,
     status: String,
 })
@@ -352,7 +353,7 @@ GeneralBody
 })
 
 app.post("/SendEventRequest",(req,res)=>{
-    const {title,teacherName,teacherEmail,teacherID,description,date,time,venue,status} = req.body
+    const {title,teacherName,teacherEmail,teacherID,description,date,StartTime,EndTime,venue,status} = req.body
     Event.findOne({title: title}, (err, event) => {
         if(event){
             res.send({message: "Event already requested"})
@@ -365,7 +366,8 @@ app.post("/SendEventRequest",(req,res)=>{
                 title,
                 description,
                 date,
-                time,
+                StartTime,
+                EndTime,
                 venue,
                 status,
             })
