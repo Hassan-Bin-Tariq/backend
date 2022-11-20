@@ -452,6 +452,16 @@ app.post("/addslots",async (req,res)=>{
     await GeneralBody.updateOne(query, update, options);
 })
 
+app.post("/GetGBmembers",async(req,res)=>{
+    try {
+        const results = await GeneralBody.find({});
+        //console.log(results);
+        res.send({message: "Got All General Bodies", generalBodies: results})
+    } catch (err) {
+        throw err;
+    }
+})
+
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
