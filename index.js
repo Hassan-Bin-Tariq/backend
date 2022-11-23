@@ -73,7 +73,9 @@ const GBSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
-    slots: Object
+    slots: Object,
+    day: String,
+    time: String,
 })
 
 const Student = new mongoose.model("Student", studentSchema)
@@ -223,7 +225,7 @@ app.post("/register",async (req,res)=>{
     let teachermails = [];
     let EBmails = [];
     let GBmails = [];
-    const { name, email, password, slots} = req.body
+    const { name, email, password, slots, day , time} = req.body
 
     try { //getting all emails of teachers from back end and changing them into single list to check if teacher is registring
         Emailss = await AllteacherEmails.find({});
@@ -306,7 +308,9 @@ GeneralBody
                     name,
                     email,
                     password,
-                    slots
+                    slots,
+                    day,
+                    time,
                 })
                 user.save(err => {
                     if(err) {
@@ -442,12 +446,32 @@ app.post("/StatusReject",async (req,res)=>{
 app.post("/addslots",async (req,res)=>{
 
     const {zip,Email} = req.body
-    console.log(Email);
+    //console.log(Email);
     const query = { 
         email:Email,
         slots: Array 
     };
     const update = { $set: { slots: zip}};
+    const options = {};
+    await GeneralBody.updateOne(query, update, options);
+})
+
+app.post("/sendDuty",async (req,res)=>{
+
+    const {Date,Slot,Email} = req.body
+    console.log(Date);
+    console.log(Slot);
+    console.log(Email);
+    
+    const query = { 
+        email:Email,
+    };
+    const update = { 
+    
+    $set: {
+        time: Slot,
+        day: Date
+    }};
     const options = {};
     await GeneralBody.updateOne(query, update, options);
 })
