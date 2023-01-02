@@ -456,6 +456,22 @@ app.post("/addslots",async (req,res)=>{
     await GeneralBody.updateOne(query, update, options);
 })
 
+app.post("/GetFreeSlots",async (req,res)=>{
+
+    const {zip,Email} = req.body
+    console.log(Email);
+    const query = { 
+        email:Email
+    };
+    try {
+        const results = await GeneralBody.find(query);
+        //console.log(results);
+        res.send({message: "Got your General Body", generalBodies: results})
+    } catch (err) {
+        throw err;
+    }
+})
+
 app.post("/sendDuty",async (req,res)=>{
 
     const {Date,Slot,Email} = req.body
