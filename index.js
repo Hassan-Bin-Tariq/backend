@@ -492,6 +492,26 @@ app.post("/sendDuty",async (req,res)=>{
     await GeneralBody.updateOne(query, update, options);
 })
 
+app.post("/ChangePass",async (req,res)=>{
+
+    const {Email,OldPassword,newPassword} = req.body
+    console.log(Email);
+    console.log(OldPassword);
+    console.log(newPassword);
+
+        const query = { 
+            email:Email,
+            password:OldPassword
+        };
+        const update = { 
+        
+        $set: {
+            password: newPassword
+        }};
+        const options = {};
+        await ExecutiveBody.updateOne(query, update, options);
+})
+
 app.post("/GetGBmembers",async(req,res)=>{
     try {
         const results = await GeneralBody.find({});
