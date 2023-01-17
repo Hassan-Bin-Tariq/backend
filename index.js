@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
+import child_process from "child_process"
 
 //Removed all tests
 //from tt
@@ -518,7 +519,14 @@ app.post("/GetGBmembers",async(req,res)=>{
         throw err;
     }
 })
+app.post("/checkSpawn",async(req,res)=>{
+    const { spawn } = child_process;
 
+    const sensor = spawn('python', ['sensor.py']);
+    sensor.stdout.on('data', function(data) {
+
+    });
+})
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
