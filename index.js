@@ -2,6 +2,8 @@ import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
 import child_process from "child_process"
+//import PythonShell from "python-shell"
+import {PythonShell} from 'python-shell';
 
 //Removed all tests
 //from tt
@@ -520,12 +522,19 @@ app.post("/GetGBmembers",async(req,res)=>{
     }
 })
 app.post("/checkSpawn",async(req,res)=>{
-    const { spawn } = child_process;
+    console.log("FUN happening")
 
-    const sensor = spawn('python', ['sensor.py']);
-    sensor.stdout.on('data', function(data) {
+    // let {PythonShell} = require('python-shell')
+    PythonShell.run("sensor.py",null,function(err,results){
+        console.log(results)
+        console.log("python fin")
+    })
+    // const { spawn } = child_process;
 
-    });
+    // const sensor = spawn('python', ['sensor.py']);
+    // sensor.stdout.on('data', function(data) {
+
+    // });
 })
 app.listen(9002,() => {
     console.log("BE started at port 9002")
