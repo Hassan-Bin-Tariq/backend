@@ -521,21 +521,6 @@ app.post("/GetGBmembers",async(req,res)=>{
         throw err;
     }
 })
-app.post("/checkSpawn",async(req,res)=>{
-    console.log("FUN happening")
-
-    // let {PythonShell} = require('python-shell')
-    PythonShell.run("sensor.py",null,function(err,results){
-        console.log(results)
-        console.log("python fin")
-    })
-    // const { spawn } = child_process;
-
-    // const sensor = spawn('python', ['sensor.py']);
-    // sensor.stdout.on('data', function(data) {
-
-    // });
-})
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
