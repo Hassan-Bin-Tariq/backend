@@ -4,11 +4,13 @@ from tkinter.filedialog import askopenfilename
 import cv2 as cv
 import face_recognition as fr
 
-
 import win32api
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+from flask_cors import CORS
+import socketio
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/FaceDetect')
