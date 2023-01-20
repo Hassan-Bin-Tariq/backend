@@ -5,12 +5,18 @@ import cv2 as cv
 import face_recognition as fr
 
 import win32api
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
+from flask import jsonify
 from flask_cors import CORS
 import socketio
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route('/getdata')
+def data_get():
+    return "This is text"
 
 
 @app.route('/FaceDetect')
@@ -47,7 +53,9 @@ def index():
         cv.waitKey(0)
 
     render_image()
-    return render_template('index.html')
+
+    return "This is text From Facedetect"
+    # return render_template('index.html')
 
 
 if __name__ == "__main__":
