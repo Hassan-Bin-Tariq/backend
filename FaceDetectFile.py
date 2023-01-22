@@ -23,6 +23,7 @@ def data_get():
 def index():
     win32api.MessageBox(0, 'You have just run a python script on the page load!',
                         'Running a Python Script via Javascript', 0x00001000)
+    print("asd")
 
     load_image = askopenfilename()
 
@@ -30,6 +31,8 @@ def index():
     target_encoding = fr.face_encodings(target_image)
 
     face_location = fr.face_locations(target_image)
+
+    # print(target_image)
 
     def create_frame(location, label):
         top, right, bottom, left = location
@@ -54,7 +57,9 @@ def index():
 
     render_image()
 
-    return "This is text From Facedetect"
+    image = ' '.join([str(elem) for elem in target_image])
+    # print(hassan)
+    return image
     # return render_template('index.html')
 
 
