@@ -8,7 +8,7 @@ import win32api
 from flask import Flask, render_template, request, Response
 from flask import jsonify
 from flask_cors import CORS
-import socketio
+import base64
 
 app = Flask(__name__)
 CORS(app)
@@ -23,16 +23,16 @@ def data_get():
 def index():
     win32api.MessageBox(0, 'You have just run a python script on the page load!',
                         'Running a Python Script via Javascript', 0x00001000)
-    print("asd")
 
     load_image = askopenfilename()
 
+    # print(type(load_image))
     target_image = fr.load_image_file(load_image)
     target_encoding = fr.face_encodings(target_image)
 
     face_location = fr.face_locations(target_image)
 
-    # print(target_image)
+    # print(type(target_encoding))
 
     def create_frame(location, label):
         top, right, bottom, left = location
@@ -57,9 +57,11 @@ def index():
 
     render_image()
 
-    image = ' '.join([str(elem) for elem in target_image])
-    # print(hassan)
-    return image
+    with open("C:/Users/SmartCom/Desktop/ibnet.jpeg", "rb") as img_file:
+        my_string = base64.b64encode(img_file.read())
+    # print(my_string)
+
+    return my_string
     # return render_template('index.html')
 
 
