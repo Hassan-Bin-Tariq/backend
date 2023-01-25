@@ -1,9 +1,26 @@
 import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
+import googleTester from "./googleTester.js"
 import child_process from "child_process"
 //import PythonShell from "python-shell"
 import {PythonShell} from 'python-shell';
+import fs from "fs"
+import { google } from "googleapis"
+
+//GOOGLE DRIVE SETUP
+// service account key file from Google Cloud console.
+const KEYFILEPATH = 'C:\\Users\\SmartCom\\Desktop\\key2.json';
+
+// Request full drive access.
+const SCOPES = ['https://www.googleapis.com/auth/drive'];
+
+// Create a service account initialize with the service account key file and scope needed
+const auth = new google.auth.GoogleAuth({
+    keyFile: KEYFILEPATH,
+    scopes: SCOPES 
+});
+///////////////////
 
 //Removed all tests
 //from tt
@@ -517,6 +534,47 @@ app.post("/GetGBmembers",async(req,res)=>{
         const results = await GeneralBody.find({});
         //console.log(results);
         res.send({message: "Got All General Bodies", generalBodies: results})
+    } catch (err) {
+        throw err;
+    }
+})
+
+async function createAndUploadFile(auth){
+
+    const driveService = google.drive({version: 'v3', auth});
+
+    let fileMetadata = {
+        'name': 'hassan2.jpg',
+        'parents':  ['15jMGzpWRGkYtV1mitmM6AcUhuB-xWS0J']
+    };
+
+    let media = {
+        mimeType: 'image/jpeg',
+        body: fs.createReadStream('hassan2.png')
+    };
+
+    let response = await driveService.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: 'id'
+    });
+
+    switch(response.status){
+        case 200:
+            let file = response.result;
+            console.log('Created File Id: ', response.data.id);
+            break;
+        default:
+            console.error('Error creating the file, ' + response.errors);
+            break;
+    }
+}
+
+app.post("/googleTester",async(req,res)=>{
+    try {
+        console.log("testing")
+        createAndUploadFile(auth).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
+        res.send({message: "UPLOADING ON GOOGLE DRIVE"})
     } catch (err) {
         throw err;
     }
