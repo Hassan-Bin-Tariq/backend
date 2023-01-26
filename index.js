@@ -1,11 +1,6 @@
 import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
-import googleTester from "./googleTester.js"
-import child_process from "child_process"
-//import PythonShell from "python-shell"
-import {PythonShell} from 'python-shell';
-import fs from "fs"
 import { google } from "googleapis"
 
 //GOOGLE DRIVE SETUP
@@ -539,23 +534,17 @@ app.post("/GetGBmembers",async(req,res)=>{
     }
 })
 
-async function createAndUploadFile(auth){
+async function createAndUploadFile(auth,Sender){
 
     const driveService = google.drive({version: 'v3', auth});
 
     let fileMetadata = {
-        'name': 'hassan2.jpg',
+        'name': Sender,
+        mimeType: 'application/vnd.google-apps.folder',
         'parents':  ['15jMGzpWRGkYtV1mitmM6AcUhuB-xWS0J']
     };
-
-    let media = {
-        mimeType: 'image/jpeg',
-        body: fs.createReadStream('hassan2.png')
-    };
-
     let response = await driveService.files.create({
         resource: fileMetadata,
-        media: media,
         fields: 'id'
     });
 
@@ -570,11 +559,12 @@ async function createAndUploadFile(auth){
     }
 }
 
-app.post("/googleTester",async(req,res)=>{
+app.post("/FolderMaker",async(req,res)=>{
+    const {Sender} = req.body
     try {
-        console.log("testing")
-        createAndUploadFile(auth).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
-        res.send({message: "UPLOADING ON GOOGLE DRIVE"})
+        //console.log(Sender)
+        createAndUploadFile(auth,Sender).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
+        res.send({message: "MAKING FOLDER ON GOOGLE DRIVE"})
     } catch (err) {
         throw err;
     }
