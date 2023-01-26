@@ -2,6 +2,9 @@ import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
 import { google } from "googleapis"
+import fs from "fs"
+
+var FolderID;
 
 //GOOGLE DRIVE SETUP
 // service account key file from Google Cloud console.
@@ -534,12 +537,13 @@ app.post("/GetGBmembers",async(req,res)=>{
     }
 })
 
-async function createAndUploadFile(auth,Sender){
+async function createFolder(auth,UserEmail){
 
+    //console.log("inside folder maing")
     const driveService = google.drive({version: 'v3', auth});
 
     let fileMetadata = {
-        'name': Sender,
+        'name': UserEmail,
         mimeType: 'application/vnd.google-apps.folder',
         'parents':  ['15jMGzpWRGkYtV1mitmM6AcUhuB-xWS0J']
     };
@@ -551,7 +555,43 @@ async function createAndUploadFile(auth,Sender){
     switch(response.status){
         case 200:
             let file = response.result;
-            console.log('Created File Id: ', response.data.id);
+
+            //INSERTING IMAGE INSIDE FOLDER WHICH IS JUST CREATED
+            console.log('Created Folder Id: ', response.data.id);
+            FolderID = response.data.id
+
+            break;
+        default:
+            console.error('Error creating the file, ' + response.errors);
+            break;
+    }
+}
+
+async function InsertImageInFolder(auth,ImagePath){
+
+    //console.log("Inside image")
+    const driveService = google.drive({version: 'v3', auth});
+
+    let fileMetadata = {
+        'name': 'hassan2.jpg',
+        'parents':  [FolderID]
+    };
+
+    let media = {
+        mimeType: 'image/jpeg',
+        body: fs.createReadStream(ImagePath)
+    };
+
+    let response = await driveService.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: 'id'
+    });
+
+    switch(response.status){
+        case 200:
+            let file = response.result;
+            console.log('Created image Id: ', response.data.id);
             break;
         default:
             console.error('Error creating the file, ' + response.errors);
@@ -560,10 +600,11 @@ async function createAndUploadFile(auth,Sender){
 }
 
 app.post("/FolderMaker",async(req,res)=>{
-    const {Sender} = req.body
+    const {UserEmail,ImagePath} = req.body
     try {
-        //console.log(Sender)
-        createAndUploadFile(auth,Sender).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
+        console.log(UserEmail,ImagePath)
+        await createFolder(auth,UserEmail).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
+        InsertImageInFolder(auth,ImagePath).catch(console.error);
         res.send({message: "MAKING FOLDER ON GOOGLE DRIVE"})
     } catch (err) {
         throw err;

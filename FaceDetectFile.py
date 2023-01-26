@@ -26,7 +26,7 @@ def index():
 
     load_image = askopenfilename()
 
-    # print(type(load_image))
+    # print(load_image)
     target_image = fr.load_image_file(load_image)
     target_encoding = fr.face_encodings(target_image)
 
@@ -57,11 +57,15 @@ def index():
 
     render_image()
 
-    with open("C:/Users/SmartCom/Desktop/ibnet.jpeg", "rb") as img_file:
+    with open(load_image, "rb") as img_file:
         my_string = base64.b64encode(img_file.read())
-    # print(my_string)
+    # print(load_image)
 
-    return my_string
+    d = dict()
+    d['path'] = load_image
+    d['base'] = str(my_string)
+
+    return d
     # return render_template('index.html')
 
 
