@@ -569,11 +569,13 @@ async function createFolder(auth,UserEmail){
 
 async function InsertImageInFolder(auth,ImagePath){
 
-    //console.log("Inside image")
+    var n = ImagePath.lastIndexOf('/');
+    var imageName = ImagePath.substring(n + 1);
+    //console.log(imageName)
     const driveService = google.drive({version: 'v3', auth});
 
     let fileMetadata = {
-        'name': 'hassan2.jpg',
+        'name': imageName,
         'parents':  [FolderID]
     };
 
