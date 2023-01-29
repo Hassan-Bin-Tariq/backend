@@ -70,11 +70,16 @@ def index():
 
 @app.route('/UploadImages')
 def index2():
+    all_images = []
     win32api.MessageBox(0, 'You have just run a python script on the page load!',
                         'Running a Python Script via Javascript', 0x00001000)
     load_image = askopenfilenames()
-    print(load_image)
-    return "This is hassan"
+    for image in load_image:
+        all_images.append(image)
+    print(type(all_images))
+    print(all_images)
+
+    return all_images
 
 
 if __name__ == "__main__":
