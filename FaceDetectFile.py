@@ -1,5 +1,5 @@
 from tkinter import Tk
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, askopenfilenames
 
 import cv2 as cv
 import face_recognition as fr
@@ -66,7 +66,15 @@ def index():
     d['base'] = str(my_string)
 
     return d
-    # return render_template('index.html')
+
+
+@app.route('/UploadImages')
+def index2():
+    win32api.MessageBox(0, 'You have just run a python script on the page load!',
+                        'Running a Python Script via Javascript', 0x00001000)
+    load_image = askopenfilenames()
+    print(load_image)
+    return "This is hassan"
 
 
 if __name__ == "__main__":
