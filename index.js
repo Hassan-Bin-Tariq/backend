@@ -6,18 +6,25 @@ import fs from "fs"
 
 var FolderID;
 
-//GOOGLE DRIVE SETUP
-// service account key file from Google Cloud console.
-const KEYFILEPATH = 'C:\\Users\\SmartCom\\Desktop\\key2.json';
+const CLIENT_ID = '415909867180-3qsq9763f4fn19p6apd3jjpopfcgm8jl.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
-// Request full drive access.
-const SCOPES = ['https://www.googleapis.com/auth/drive'];
+const REFRESH_TOKEN = '1//04M0ikiwU6OZUCgYIARAAGAQSNwF-L9IrIg2s124iUtx_OwI926BCPcntsjIHSVoJFGdHYBQdeVNR6LqdQHSaNnYCFtHyPpbd5Lg';
 
-// Create a service account initialize with the service account key file and scope needed
-const auth = new google.auth.GoogleAuth({
-    keyFile: KEYFILEPATH,
-    scopes: SCOPES 
+const oauth2Client = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REDIRECT_URI
+);
+
+oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+const drive = google.drive({
+  version: 'v3',
+  auth: oauth2Client,
 });
+
 ///////////////////
 
 //Removed all tests
@@ -537,76 +544,114 @@ app.post("/GetGBmembers",async(req,res)=>{
     }
 })
 
-async function createFolder(auth,UserEmail){
+async function createFolder(UserEmail){
 
     //console.log("inside folder maing")
-    const driveService = google.drive({version: 'v3', auth});
 
-    let fileMetadata = {
-        'name': UserEmail,
-        mimeType: 'application/vnd.google-apps.folder',
-        'parents':  ['15jMGzpWRGkYtV1mitmM6AcUhuB-xWS0J']
-    };
-    let response = await driveService.files.create({
-        resource: fileMetadata,
-        fields: 'id'
-    });
-
-    switch(response.status){
-        case 200:
-            let file = response.result;
-
-            //INSERTING IMAGE INSIDE FOLDER WHICH IS JUST CREATED
-            console.log('Created Folder Id: ', response.data.id);
-            FolderID = response.data.id
-
-            break;
-        default:
-            console.error('Error creating the file, ' + response.errors);
-            break;
+    try {
+        const response = await drive.files.create({
+            
+        requestBody: {
+            'name': UserEmail,
+            mimeType: 'application/vnd.google-apps.folder',
+            'parents':  ['10elnl3PbYG1OkJ3VpXWg8kg1hcesoe_v']
+        },
+        });
+    
+        console.log(response.data);
+        FolderID = response.data.id
+    } catch (error) {
+        console.log(error.message);
     }
+
+    // const driveService = google.drive({version: 'v3', auth});
+
+    // let fileMetadata = {
+    //     'name': UserEmail,
+    //     mimeType: 'application/vnd.google-apps.folder',
+    //     'parents':  ['15jMGzpWRGkYtV1mitmM6AcUhuB-xWS0J']
+    // };
+    // let response = await driveService.files.create({
+    //     resource: fileMetadata,
+    //     fields: 'id'
+    // });
+
+    // switch(response.status){
+    //     case 200:
+    //         let file = response.result;
+
+    //         //INSERTING IMAGE INSIDE FOLDER WHICH IS JUST CREATED
+    //         console.log('Created Folder Id: ', response.data.id);
+    //         FolderID = response.data.id
+
+    //         break;
+    //     default:
+    //         console.error('Error creating the file, ' + response.errors);
+    //         break;
+    // }
 }
 
-async function InsertImageInFolder(auth,ImagePath){
+async function InsertImageInFolder(ImagePath){
 
     var n = ImagePath.lastIndexOf('/');
     var imageName = ImagePath.substring(n + 1);
+
+    try {
+        const response = await drive.files.create({
+            
+        requestBody: {
+            name: imageName, //This can be name of your choice
+            mimeType: 'image/jpg',
+            'parents':  [FolderID]
+          },
+          media: {
+            mimeType: 'image/jpg',
+            body: fs.createReadStream(ImagePath),
+          },
+        });
+    
+        console.log(response.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+
+
     //console.log(imageName)
-    const driveService = google.drive({version: 'v3', auth});
+    // const driveService = google.drive({version: 'v3', auth});
 
-    let fileMetadata = {
-        'name': imageName,
-        'parents':  [FolderID]
-    };
+    // let fileMetadata = {
+    //     'name': imageName,
+    //     'parents':  [FolderID]
+    // };
 
-    let media = {
-        mimeType: 'image/jpeg',
-        body: fs.createReadStream(ImagePath)
-    };
+    // let media = {
+    //     mimeType: 'image/jpeg',
+    //     body: fs.createReadStream(ImagePath)
+    // };
 
-    let response = await driveService.files.create({
-        resource: fileMetadata,
-        media: media,
-        fields: 'id'
-    });
+    // let response = await driveService.files.create({
+    //     resource: fileMetadata,
+    //     media: media,
+    //     fields: 'id'
+    // });
 
-    switch(response.status){
-        case 200:
-            let file = response.result;
-            console.log('Created image Id: ', response.data.id);
-            break;
-        default:
-            console.error('Error creating the file, ' + response.errors);
-            break;
-    }
+    // switch(response.status){
+    //     case 200:
+    //         let file = response.result;
+    //         console.log('Created image Id: ', response.data.id);
+    //         break;
+    //     default:
+    //         console.error('Error creating the file, ' + response.errors);
+    //         break;
+    // }
 }
 
 app.post("/FolderMaker",async(req,res)=>{
     const {UserEmail,ImagePath} = req.body
     try {
         console.log(UserEmail,ImagePath)
-        await createFolder(auth,UserEmail).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
-        InsertImageInFolder(auth,ImagePath).catch(console.error);
+        await createFolder(UserEmail).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
+        InsertImageInFolder(ImagePath).catch(console.error);
         res.send({message: "MAKING FOLDER ON GOOGLE DRIVE"})
     } catch (err) {
         throw err;
