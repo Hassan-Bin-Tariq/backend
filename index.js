@@ -657,6 +657,80 @@ app.post("/FolderMaker",async(req,res)=>{
         throw err;
     }
 })
+
+
+var rollNumbers = [];
+var folderIDS = [];
+var imageIDS = [];
+var imageURLS = [];
+var dict = {};
+async function listFolders() {
+try {
+    const fileId = '188FbNu8fX8L5qDbgi_2zCO5ecSAum7KH';
+
+    const result = await drive.files.list({
+        q: "mimeType='application/vnd.google-apps.folder' and '17McWc-DAfayH0BYiM7jmGbdLd-PXQNyH' in parents"
+        //parent: fileId 
+      //fields: 'webViewLink, webContentLink'
+    });
+    for (let i = 0; i < result.data.files.length; i++) {
+        rollNumbers.push(result.data.files[i].name)
+        folderIDS.push(result.data.files[i].id)
+    }
+    console.log(rollNumbers);
+    console.log(folderIDS);
+} catch (error) {
+    console.log(error.message);
+}
+}
+
+async function getpicsInsideFolders() {
+try {
+    for (let i = 0; i < folderIDS.length; i++) {    
+      //console.log(folderIDS[i])
+        const result = await drive.files.list({
+        q:"mimeType='image/jpeg'and '"+folderIDS[i]+"' in parents"
+        });
+      imageIDS.push(result.data.files[0].id) //SIRF PEHLI PEHLI FILES UTHANI HA MATCH KRNEY K LIA JO SIGN UP K TIME DI USER NE
+    }
+    console.log(imageIDS)
+    } catch (error) {
+    console.log(error.message);
+    }
+}
+
+async function generateUrls() {
+    try {
+    for (let i = 0; i < imageIDS.length; i++) {
+        const result = await drive.files.get({
+        fileId: imageIDS[i],
+        fields: 'webViewLink, webContentLink'
+        });
+        imageURLS.push(result.data.webViewLink)
+    }
+    console.log(imageURLS);
+    } catch (error) {
+    console.log(error.message);
+    }
+}
+
+function generateDictonary(){
+    for (let i = 0; i < imageURLS.length; i++) {
+    dict[rollNumbers[i]] = imageURLS[i];
+    }
+    console.log(dict)
+}
+
+app.post("/DriveDataGetter",async(req,res)=>{
+    console.log("inside data getter")
+    await listFolders()
+    await getpicsInsideFolders()
+    await generateUrls()
+    await generateDictonary()
+
+    res.send({message: "got data", Data: dict})
+})
+
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
