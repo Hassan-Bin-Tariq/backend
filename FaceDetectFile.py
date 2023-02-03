@@ -68,18 +68,30 @@ def index():
     return d
 
 
-@app.route('/UploadImages')
-def index2():
-    all_images = []
-    win32api.MessageBox(0, 'You have just run a python script on the page load!',
-                        'Running a Python Script via Javascript', 0x00001000)
-    load_image = askopenfilenames()
-    for image in load_image:
-        all_images.append(image)
-    print(type(all_images))
-    print(all_images)
+# @app.route('/UploadImages')
+# def index2():
+#     all_images = []
+#     win32api.MessageBox(0, 'You have just run a python script on the page load!',
+#                         'Running a Python Script via Javascript', 0x00001000)
+#     load_image = askopenfilenames()
+#     for image in load_image:
+#         all_images.append(image)
+#     print(type(all_images))
+#     print(all_images)
 
-    return all_images
+#     return all_images
+
+@app.route('/UploadImages', methods=['POST'])
+def data():
+    data = request.get_json()
+    print(data)
+    keys = data.keys()
+    values = data.values()
+    for key in keys:
+        print(key)
+    for value in values:
+        print(value)
+    return 'Data received', 200
 
 
 if __name__ == "__main__":

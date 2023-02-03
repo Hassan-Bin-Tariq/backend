@@ -722,6 +722,11 @@ function generateDictonary(){
 }
 
 app.post("/DriveDataGetter",async(req,res)=>{
+    rollNumbers = [];
+    folderIDS = [];
+    imageIDS = [];
+    imageURLS = [];
+    dict = {};
     console.log("inside data getter")
     await listFolders()
     await getpicsInsideFolders()
