@@ -6,11 +6,11 @@ import fs from "fs"
 
 var FolderID;
 
-const CLIENT_ID = '415909867180-3qsq9763f4fn19p6apd3jjpopfcgm8jl.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
+const CLIENT_ID = '52753542950-juopkkoe7u7ufh9i5rjn7ob63335ufq7.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
-const REFRESH_TOKEN = '1//04M0ikiwU6OZUCgYIARAAGAQSNwF-L9IrIg2s124iUtx_OwI926BCPcntsjIHSVoJFGdHYBQdeVNR6LqdQHSaNnYCFtHyPpbd5Lg';
+const REFRESH_TOKEN = '1//04r2OCoElanrTCgYIARAAGAQSNwF-L9IruPKFZOJaSardvJFZLusfIv8IikzE1xRZLKqPoAJmlWEDzVstUsaBFnGpjEOW_hwER14';
 
 const oauth2Client = new google.auth.OAuth2(
   CLIENT_ID,
@@ -554,7 +554,7 @@ async function createFolder(UserEmail){
         requestBody: {
             'name': UserEmail,
             mimeType: 'application/vnd.google-apps.folder',
-            'parents':  ['17McWc-DAfayH0BYiM7jmGbdLd-PXQNyH']
+            'parents':  ['1vv4xpJyFiEyts4grXbUz9p8utyX_XexG']
         },
         });
     
@@ -666,10 +666,10 @@ var imageURLS = [];
 var dict = {};
 async function listFolders() {
 try {
-    const fileId = '188FbNu8fX8L5qDbgi_2zCO5ecSAum7KH';
+
 
     const result = await drive.files.list({
-        q: "mimeType='application/vnd.google-apps.folder' and '17McWc-DAfayH0BYiM7jmGbdLd-PXQNyH' in parents"
+        q: "mimeType='application/vnd.google-apps.folder' and '1vv4xpJyFiEyts4grXbUz9p8utyX_XexG' in parents"
         //parent: fileId 
       //fields: 'webViewLink, webContentLink'
     });
