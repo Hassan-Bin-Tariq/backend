@@ -23,6 +23,10 @@ scheduler.start()
 CORS(app)
 
 
+Present_Encodings = []
+# all_images_paths = []
+
+
 @app.route('/getdata')
 def data_get():
     return "This is text"
@@ -90,36 +94,20 @@ def index():
 
 #     return all_images
 
-async def process_image(url):
-    print(url)
-    response = urllib.request.urlopen(url)
-    img_array = np.array(bytearray(response.read()), dtype=np.uint8)
-
-    # Decode the image data
-    known_image = cv.imdecode(img_array, cv.IMREAD_UNCHANGED)
-
-    # Check if the image was correctly loaded
-    if known_image is None:
-        print("Failed to load the image data.")
-        exit(1)
-
-    # Call fr.face_encodings
-    face_encodings = fr.face_encodings(known_image)
-    return face_encodings
-
 
 async def get_face_encodings(url):
-    resp = await asyncio.get_event_loop().run_in_executor(None, urllib.request.urlopen, url)
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    resp = await asyncio.get_event_loop().run_in_executor(None, urllib.request.urlopen, req)
     img_array = np.array(bytearray(resp.read()), dtype=np.uint8)
     known_image = cv.imdecode(img_array, cv.IMREAD_UNCHANGED)
     face_encodings = []
     if known_image is not None:
-        face_encodings = fr.face_encodings(known_image)
+        face_encodings = fr.face_encodings(known_image)[0]
     return face_encodings
 
 
 async def process_image(url):
-    # print(url)
+    print(url)
     parts = url.split('/')
 
     # Extract the file id
@@ -129,21 +117,69 @@ async def process_image(url):
     new_url = f"https://drive.google.com/uc?id={file_id}"
     face_encodings = await get_face_encodings(new_url)
     # Perform other processing here with the face encodings
-    print(face_encodings)
+    Present_Encodings.append(face_encodings)
+    # print(face_encodings)
+
+
+def create_frame(targett, location, label):
+    top, right, bottom, left = location
+
+    cv.rectangle(targett, (left, top), (right, bottom), (255, 0, 0), 2)
+    cv.rectangle(targett, (left, bottom + 20),
+                 (right, bottom), (255, 0, 0), cv.FILLED)
+    cv.putText(targett, label, (left + 3, bottom + 14),
+               cv.FONT_HERSHEY_DUPLEX, 0.4, (255, 255, 255), 1)
+
+
+async def getSelected_face_encodings(all_paths):
+    print("inside")
+    for path in all_paths:
+        target_image = fr.load_image_file(path)
+        target_encoding = fr.face_encodings(target_image)
+
+        for encode in Present_Encodings:
+            print(encode, target_encoding)
+            face_location = fr.face_locations(target_image)
+            is_target_face = fr.compare_faces(
+                encode, target_encoding, tolerance=0.55)
+
+            if face_location:
+                face_number = 0
+                for location in face_location:
+                    if is_target_face[face_number]:
+                        label = "filename"
+                        create_frame(target_image, location, label)
+
+                    face_number += 1
+
+        rgb_img = cv.cvtColor(target_image, cv.COLOR_RGB2BGRA)
+        cv.imshow('Face Recognition', rgb_img)
+        cv.waitKey(0)
 
 
 @app.route('/UploadImages', methods=['POST'])
 async def data():
-
+    all_images_paths = []
+    emails = []
     data = request.get_json()
-    print(data)
     keys = data.keys()
     valuesss = data.values()
+
     for key in keys:
+        emails.append(key)
         print(key)
+
+    win32api.MessageBox(0, 'You have just run a python script on the page load!',
+                        'Running a Python Script via Javascript', 0x00001000)
+    load_image = askopenfilenames()
+    for image in load_image:
+        all_images_paths.append(image)
+
+    # print(selected_encodings)
 
     tasks = [asyncio.ensure_future(process_image(url)) for url in valuesss]
     await asyncio.gather(*tasks)
+    await getSelected_face_encodings(all_images_paths)
 
     return 'Data received', 200
 
