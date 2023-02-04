@@ -10,7 +10,7 @@ const CLIENT_ID = '52753542950-juopkkoe7u7ufh9i5rjn7ob63335ufq7.apps.googleuserc
 const CLIENT_SECRET = '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';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
-const REFRESH_TOKEN = '1//04r2OCoElanrTCgYIARAAGAQSNwF-L9IruPKFZOJaSardvJFZLusfIv8IikzE1xRZLKqPoAJmlWEDzVstUsaBFnGpjEOW_hwER14';
+const REFRESH_TOKEN = '1//04dUJx8bUWp4SCgYIARAAGAQSNwF-L9Ir5a2zXRhkTe9eRRqG8V1QuzlrN97kD9rV5q9yZCihGtGV2JjorgNaYlEKew5UdHgEll0';
 
 const oauth2Client = new google.auth.OAuth2(
   CLIENT_ID,
@@ -591,7 +591,7 @@ async function createFolder(UserEmail){
     // }
 }
 
-async function InsertImageInFolder(ImagePath){
+async function InsertImageInFolder(UserEmail,ImagePath){
 
     var n = ImagePath.lastIndexOf('/');
     var imageName = ImagePath.substring(n + 1);
@@ -600,7 +600,7 @@ async function InsertImageInFolder(ImagePath){
         const response = await drive.files.create({
             
         requestBody: {
-            name: imageName, //This can be name of your choice
+            name: UserEmail, //This can be name of your choice
             mimeType: 'image/jpg',
             'parents':  [FolderID]
           },
@@ -651,7 +651,7 @@ app.post("/FolderMaker",async(req,res)=>{
     try {
         console.log(UserEmail,ImagePath)
         await createFolder(UserEmail).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
-        InsertImageInFolder(ImagePath).catch(console.error);
+        InsertImageInFolder(UserEmail,ImagePath).catch(console.error);
         res.send({message: "MAKING FOLDER ON GOOGLE DRIVE"})
     } catch (err) {
         throw err;

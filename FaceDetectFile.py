@@ -23,7 +23,6 @@ scheduler.start()
 CORS(app)
 
 
-Present_Encodings = []
 # all_images_paths = []
 
 
@@ -106,7 +105,7 @@ async def get_face_encodings(url):
     return face_encodings
 
 
-async def process_image(url):
+async def process_image(url, Present_Encodings):
     print(url)
     parts = url.split('/')
 
@@ -131,14 +130,15 @@ def create_frame(targett, location, label):
                cv.FONT_HERSHEY_DUPLEX, 0.4, (255, 255, 255), 1)
 
 
-async def getSelected_face_encodings(all_paths):
+async def getSelected_face_encodings(all_paths, detected_faces, Present_Encodings):
     print("inside")
+
     for path in all_paths:
         target_image = fr.load_image_file(path)
         target_encoding = fr.face_encodings(target_image)
-
+        kk = 0
         for encode in Present_Encodings:
-            print(encode, target_encoding)
+            # print(encode, target_encoding)
             face_location = fr.face_locations(target_image)
             is_target_face = fr.compare_faces(
                 encode, target_encoding, tolerance=0.55)
@@ -147,11 +147,13 @@ async def getSelected_face_encodings(all_paths):
                 face_number = 0
                 for location in face_location:
                     if is_target_face[face_number]:
-                        label = "filename"
+                        label = "Face Matched"
                         create_frame(target_image, location, label)
+                        detected_faces.append(path)
+                        print(kk)
 
                     face_number += 1
-
+            kk += 1
         rgb_img = cv.cvtColor(target_image, cv.COLOR_RGB2BGRA)
         cv.imshow('Face Recognition', rgb_img)
         cv.waitKey(0)
@@ -159,6 +161,8 @@ async def getSelected_face_encodings(all_paths):
 
 @app.route('/UploadImages', methods=['POST'])
 async def data():
+    Present_Encodings = []
+    detected_faces = []
     all_images_paths = []
     emails = []
     data = request.get_json()
@@ -177,11 +181,12 @@ async def data():
 
     # print(selected_encodings)
 
-    tasks = [asyncio.ensure_future(process_image(url)) for url in valuesss]
+    tasks = [asyncio.ensure_future(process_image(
+        url, Present_Encodings)) for url in valuesss]
     await asyncio.gather(*tasks)
-    await getSelected_face_encodings(all_images_paths)
+    await getSelected_face_encodings(all_images_paths, detected_faces, Present_Encodings)
 
-    return 'Data received', 200
+    return detected_faces, 200
 
 
 if __name__ == "__main__":
