@@ -1,6 +1,11 @@
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askopenfilenames
 
+import urllib.request
+import numpy as np
+import asyncio
+
+
 import cv2 as cv
 import face_recognition as fr
 
@@ -8,9 +13,13 @@ import win32api
 from flask import Flask, render_template, request, Response
 from flask import jsonify
 from flask_cors import CORS
+from flask_apscheduler import APScheduler
 import base64
 
 app = Flask(__name__)
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 CORS(app)
 
 
@@ -81,16 +90,61 @@ def index():
 
 #     return all_images
 
+async def process_image(url):
+    print(url)
+    response = urllib.request.urlopen(url)
+    img_array = np.array(bytearray(response.read()), dtype=np.uint8)
+
+    # Decode the image data
+    known_image = cv.imdecode(img_array, cv.IMREAD_UNCHANGED)
+
+    # Check if the image was correctly loaded
+    if known_image is None:
+        print("Failed to load the image data.")
+        exit(1)
+
+    # Call fr.face_encodings
+    face_encodings = fr.face_encodings(known_image)
+    return face_encodings
+
+
+async def get_face_encodings(url):
+    resp = await asyncio.get_event_loop().run_in_executor(None, urllib.request.urlopen, url)
+    img_array = np.array(bytearray(resp.read()), dtype=np.uint8)
+    known_image = cv.imdecode(img_array, cv.IMREAD_UNCHANGED)
+    face_encodings = []
+    if known_image is not None:
+        face_encodings = fr.face_encodings(known_image)
+    return face_encodings
+
+
+async def process_image(url):
+    # print(url)
+    parts = url.split('/')
+
+    # Extract the file id
+    file_id = parts[5]
+
+    # Create the new link using the file id
+    new_url = f"https://drive.google.com/uc?id={file_id}"
+    face_encodings = await get_face_encodings(new_url)
+    # Perform other processing here with the face encodings
+    print(face_encodings)
+
+
 @app.route('/UploadImages', methods=['POST'])
-def data():
+async def data():
+
     data = request.get_json()
     print(data)
     keys = data.keys()
-    values = data.values()
+    valuesss = data.values()
     for key in keys:
         print(key)
-    for value in values:
-        print(value)
+
+    tasks = [asyncio.ensure_future(process_image(url)) for url in valuesss]
+    await asyncio.gather(*tasks)
+
     return 'Data received', 200
 
 
