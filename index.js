@@ -736,6 +736,13 @@ app.post("/DriveDataGetter",async(req,res)=>{
     res.send({message: "got data", Data: dict})
 })
 
+app.post("/UploadToDrive",async(req,res)=>{
+    const {UploadData} = req.body
+    console.log(UploadData);
+})
+
+
+
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
