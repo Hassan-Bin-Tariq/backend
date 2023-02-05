@@ -600,50 +600,20 @@ async function InsertImageInFolder(UserEmail,ImagePath){
         const response = await drive.files.create({
             
         requestBody: {
-            name: UserEmail, //This can be name of your choice
+            name: imageName, //This can be name of your choice
             mimeType: 'image/jpg',
             'parents':  [FolderID]
-          },
-          media: {
+        },
+        media: {
             mimeType: 'image/jpg',
             body: fs.createReadStream(ImagePath),
-          },
+        },
         });
     
         console.log(response.data);
-      } catch (error) {
+    } catch (error) {
         console.log(error.message);
-      }
-
-
-    //console.log(imageName)
-    // const driveService = google.drive({version: 'v3', auth});
-
-    // let fileMetadata = {
-    //     'name': imageName,
-    //     'parents':  [FolderID]
-    // };
-
-    // let media = {
-    //     mimeType: 'image/jpeg',
-    //     body: fs.createReadStream(ImagePath)
-    // };
-
-    // let response = await driveService.files.create({
-    //     resource: fileMetadata,
-    //     media: media,
-    //     fields: 'id'
-    // });
-
-    // switch(response.status){
-    //     case 200:
-    //         let file = response.result;
-    //         console.log('Created image Id: ', response.data.id);
-    //         break;
-    //     default:
-    //         console.error('Error creating the file, ' + response.errors);
-    //         break;
-    // }
+    }
 }
 
 app.post("/FolderMaker",async(req,res)=>{
@@ -652,7 +622,7 @@ app.post("/FolderMaker",async(req,res)=>{
         console.log(UserEmail,ImagePath)
         await createFolder(UserEmail).catch(console.error); //CALLING FUNCTION TO UPLOAD FILE
         InsertImageInFolder(UserEmail,ImagePath).catch(console.error);
-        res.send({message: "MAKING FOLDER ON GOOGLE DRIVE"})
+        res.send({message: "MAKING FOLDER ON GOOGLE DRIVE",Folder:FolderID})
     } catch (err) {
         throw err;
     }
