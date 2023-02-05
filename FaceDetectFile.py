@@ -1,5 +1,7 @@
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askopenfilenames
+import tkinter.messagebox
+
 
 import urllib.request
 import numpy as np
@@ -9,7 +11,7 @@ import asyncio
 import cv2 as cv
 import face_recognition as fr
 
-import win32api
+# import win32api
 from flask import Flask, render_template, request, Response
 from flask import jsonify
 from flask_cors import CORS
@@ -33,8 +35,7 @@ def data_get():
 
 @app.route('/FaceDetect')
 def index():
-    win32api.MessageBox(0, 'You have just run a python script on the page load!',
-                        'Running a Python Script via Javascript', 0x00001000)
+    tkinter.messagebox.showinfo("Title", "Your message here")
 
     load_image = askopenfilename()
 
@@ -180,8 +181,8 @@ async def data():
         emails.append(key)
         print(key)
 
-    win32api.MessageBox(0, 'You have just run a python script on the page load!',
-                        'Running a Python Script via Javascript', 0x00001000)
+    tkinter.messagebox.showinfo("Title", "Your message here")
+
     load_image = askopenfilenames()
     for image in load_image:
         all_images_paths.append(image)
