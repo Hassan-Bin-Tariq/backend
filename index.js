@@ -66,7 +66,8 @@ const MentorrEmailsSchema = new mongoose.Schema({
 const studentSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+    FolderID: String
 })
 
 const MentorSchema = new mongoose.Schema({
@@ -249,7 +250,7 @@ app.post("/register",async (req,res)=>{
     let teachermails = [];
     let EBmails = [];
     let GBmails = [];
-    const { name, email, password, slots, Duty} = req.body
+    const { name, email, password, slots, Duty,FolderID} = req.body
 
     try { //getting all emails of teachers from back end and changing them into single list to check if teacher is registring
         Emailss = await AllteacherEmails.find({});
@@ -347,7 +348,8 @@ GeneralBody
                 const user = new Student({
                     name,
                     email,
-                    password
+                    password,
+                    FolderID
                 })
                 user.save(err => {
                     if(err) {
@@ -671,16 +673,18 @@ try {
 
 async function generateUrls() {
     try {
-    for (let i = 0; i < imageIDS.length; i++) {
-        const result = await drive.files.get({
-        fileId: imageIDS[i],
-        fields: 'webViewLink, webContentLink'
-        });
-        imageURLS.push(result.data.webViewLink)
-    }
-    console.log(imageURLS);
-    } catch (error) {
-    console.log(error.message);
+
+        for (let i = 0; i < imageIDS.length; i++) {
+            const result = await drive.files.get({
+            fileId: imageIDS[i],
+            fields: 'webViewLink, webContentLink'
+            });
+            imageURLS.push(result.data.webViewLink)
+        }
+        console.log(imageURLS);
+    } 
+    catch (error) {
+        console.log(error.message);
     }
 }
 
@@ -752,6 +756,49 @@ app.post("/UploadToDrive",async(req,res)=>{
         console.log(key, value);
         await uploadToDesiredFolder(key,value)
     }
+})
+
+
+async function getImagesInFolder(folder,images) {
+    try {
+        console.log("Paresnt: ",folder)
+        const result = await drive.files.list({
+            q:"mimeType='image/jpeg'and '"+folder+"' in parents"
+        });
+        for (let i = 0; i < result.data.files.length; i++) {
+            images.push(result.data.files[i].id)
+        }
+    } 
+    catch (error) {
+        console.log(error.message);
+    }
+}
+
+async function UrlMaker(urlsForLogedIn,imageIds){
+    try {
+        
+        for (let i = 0; i < imageIds.length; i++) {
+            const result = await drive.files.get({
+            fileId: imageIds[i],
+            fields: 'webViewLink, webContentLink'
+            });
+            urlsForLogedIn.push(result.data.webViewLink)
+        }
+    } 
+    catch (error) {
+        console.log(error.message);
+    }
+}
+
+app.post("/GetImages",async(req,res)=>{
+    const {Folder} = req.body
+    var images = []
+    var urlsForLogedIn = []
+    await getImagesInFolder(Folder,images)
+    //console.log(images);
+    await UrlMaker(urlsForLogedIn,images)
+    console.log(urlsForLogedIn)
+    res.send({message: "got URLS", urlsForLogedIn})
 })
 
 
