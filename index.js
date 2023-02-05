@@ -736,9 +736,52 @@ app.post("/DriveDataGetter",async(req,res)=>{
     res.send({message: "got data", Data: dict})
 })
 
+
+async function uploadToDesiredFolder(path,FolderName) {
+    //console.log(FolderName)
+    const res = await drive.files.list({
+        q: `mimeType='application/vnd.google-apps.folder' and trashed = false and name='${FolderName}'`,
+        fields: 'nextPageToken, ' +
+                'files(id, name)'
+    });
+    const files = res.data.files;
+    if (files.length) {
+        console.log(files[0].id);
+        var n = path.lastIndexOf('/');  //FOLDER ID GET KRK US MA IMAGE INSERT KR DO
+        var imageName = path.substring(n + 1);
+    
+        try {
+            const response = await drive.files.create({
+                
+            requestBody: {
+                name: imageName, //This can be name of your choice
+                mimeType: 'image/jpg',
+                'parents':  [files[0].id]
+            },
+            media: {
+                mimeType: 'image/jpg',
+                body: fs.createReadStream(path),
+            },
+            });
+        
+            console.log(response.data);
+        } catch (error) {
+            console.log(error.message);
+        }
+
+    } else {
+        console.log(`No folder found with name: ${FolderName}`);
+    }
+}
 app.post("/UploadToDrive",async(req,res)=>{
+    
     const {UploadData} = req.body
     console.log(UploadData);
+    //await uploadToDesiredFolder("19F-0387@nu.edu.pk")
+    for (const [key, value] of Object.entries(UploadData)) {
+        console.log(key, value);
+        await uploadToDesiredFolder(key,value)
+    }
 })
 
 
