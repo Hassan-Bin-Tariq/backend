@@ -31,16 +31,11 @@ const drive = google.drive({
 //from tt
 
 const app = express()
-const bodyParser = require("body-parser");
+//const bodyParser = require("body-parser");
 app.use(express.json())
-app.use(express.urlencoded())
 app.use(cors())
-app.use(bodyParser.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extemded:true}));
+//app.use(bodyParser.json());
 
-
-mongoose.Promise = global.Promise;
 
 mongoose.connect("mongodb+srv://hassan:hassan123@cluster0.brlttau.mongodb.net/Mediascape?retryWrites=true&w=majority", {
     useNewUrlParser: true,
@@ -154,6 +149,7 @@ const InventoryTable = new mongoose.model("InventoryTable",InventorySchema)
 //     res.sendFile(__dirname + "Photographyhomepage.js")
 // })
  app.post("/photographyPortal", async (req, res) => {
+    console.log("hassan")
     //res.send("/Photographyhomepage.js")
 //     let newIT = new InventoryTable({
 //         column1 = req.body.column1;
@@ -172,10 +168,10 @@ const InventoryTable = new mongoose.model("InventoryTable",InventorySchema)
       
     res.status(201).send(result);
     } 
-    catch (err)
-     {
-        throw err;
-        alert("Problem with bakend")
+    catch (error) 
+    {
+        console.error(error);
+        res.status(500).send(error);
     }
   });
 
