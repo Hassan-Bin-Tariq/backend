@@ -859,6 +859,37 @@ app.post("/GetImages",async(req,res)=>{
     res.send({message: "got URLS", urlsForLogedIn})
 })
 
+// GENERATE EVENT REQUESTS
+app.post("/GenerateEventRequest",(req,res)=>{
+    const {title,headName,headEmail,userID,description,date,StartTime,EndTime,venue,status} = req.body
+    Event.findOne({title: title}, (err, event) => {
+        if(event){
+            res.send({message: "Event already created"})
+        } 
+        else{
+            const user = new Event({
+                headName,
+                headEmail,
+                userID,
+                title,
+                description,
+                date,
+                StartTime,
+                EndTime,
+                venue,
+                status,
+            })
+            user.save(err => {
+                if(err) {
+                    res.send(err)
+                } else {
+                    res.send( { message: "Successfully generated an event." })
+                }
+            })
+        }
+    })
+})
+
 
 
 app.listen(9002,() => {
