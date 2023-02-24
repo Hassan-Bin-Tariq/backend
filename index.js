@@ -32,8 +32,10 @@ const drive = google.drive({
 
 const app = express()
 //const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 app.use(express.json())
 app.use(cors())
+app.use(bodyParser.json());
 //app.use(bodyParser.json());
 
 
@@ -50,22 +52,7 @@ const InventorySchema = new mongoose.Schema({
     column2:String,
     column3:String,
     column4:String
-    // column1: {
-    //   type: String,
-    //   required: true,
-    // },
-    // column2: {
-    //   type: String,
-    //   required: true,
-    // },
-    // column3: {
-    //   type: String,
-    //   required: true,
-    // },
-    // column4: {
-    //     type: String,
-    //     required: true,
-    //   }
+    
   })
 
 const teacherSchema = new mongoose.Schema({
@@ -144,36 +131,26 @@ const GBEmails = new mongoose.model("GBEmails", GBEmailsSchema)
 const InventoryTable = new mongoose.model("InventoryTable",InventorySchema)
 
 //Routes
-// app.get("/photographyPortal", function(req,res)=>
-// {
-//     res.sendFile(__dirname + "Photographyhomepage.js")
-// })
- app.post("/photographyPortal", async (req, res) => {
-    console.log("hassan")
-    //res.send("/Photographyhomepage.js")
-//     let newIT = new InventoryTable({
-//         column1 = req.body.column1;
-//         column2 = req.body.column2;
-//         column3 = req.body.column3;
-//         column4 = req.body.column4;
 
-//  });
-    // newIT.save();
+ app.post("/invent", async (req, res) => {
+    console.log("hassan")
     const tableData =req.body;
   
-   
-    let result;
-    try {
-      result = await InventoryTable.insertMany(tableData);
-      
-    res.status(201).send(result);
-    } 
-    catch (error) 
+    console.log(tableData);
+   InventoryTable.insertMany(tableData, (err, docs) =>
+   {
+    if(err)
     {
-        console.error(error);
-        res.status(500).send(error);
+        console.error(err);
+      res.status(500).send('Error saving table data');
+    } else 
+    {
+      console.log(docs);
+      res.send('Table data saved successfully');
     }
-  });
+    }
+   )
+   });
 
 app.post("/login",async (req,res)=>{
     const { email, password} = req.body
