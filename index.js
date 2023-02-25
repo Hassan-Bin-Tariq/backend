@@ -117,6 +117,19 @@ const GBSchema = new mongoose.Schema({
     Duty: Object,
 })
 
+const GenEventSchema = new mongoose.Schema({
+    headEmail: String,
+    headEmail: String,
+    userID: String,
+    title: String,
+    description: String,
+    date: String,
+    StartTime: String,
+    EndTime: String,
+    venue: String,
+    status: String,
+})
+
 const Student = new mongoose.model("Student", studentSchema)
 const Teacher = new mongoose.model("Teacher", teacherSchema)
 const Mentor = new mongoose.model("Mentor", MentorSchema)
@@ -129,6 +142,7 @@ const MentorEmail = new mongoose.model("MentorEmail", MentorrEmailsSchema)
 const EBEmails = new mongoose.model("EBEmails", EBEmailsSchema)
 const GBEmails = new mongoose.model("GBEmails", GBEmailsSchema)
 const InventoryTable = new mongoose.model("InventoryTable",InventorySchema)
+const GenEvent = new mongoose.model("GenEvent", GenEventSchema)
 
 //Routes
 
@@ -839,12 +853,12 @@ app.post("/GetImages",async(req,res)=>{
 // GENERATE EVENT REQUESTS
 app.post("/GenerateEventRequest",(req,res)=>{
     const {title,headName,headEmail,userID,description,date,StartTime,EndTime,venue,status} = req.body
-    Event.findOne({title: title}, (err, event) => {
-        if(event){
+    GenEvent.findOne({title: title}, (err, genevent) => {
+        if(genevent){
             res.send({message: "Event already created"})
         } 
         else{
-            const user = new Event({
+            const user = new GenEvent({
                 headName,
                 headEmail,
                 userID,
@@ -860,7 +874,7 @@ app.post("/GenerateEventRequest",(req,res)=>{
                 if(err) {
                     res.send(err)
                 } else {
-                    res.send( { message: "Successfully generated an event." })
+                    res.send( { message: "Successfully generated an FPS event." })
                 }
             })
         }
