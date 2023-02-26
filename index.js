@@ -32,10 +32,9 @@ const drive = google.drive({
 
 const app = express()
 //const bodyParser = require("body-parser");
-const bodyParser = require('body-parser');
 app.use(express.json())
 app.use(cors())
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 //app.use(bodyParser.json());
 
 
@@ -151,19 +150,40 @@ const GenEvent = new mongoose.model("GenEvent", GenEventSchema)
     const tableData =req.body;
   
     console.log(tableData);
-   InventoryTable.insertMany(tableData, (err, docs) =>
-   {
-    if(err)
-    {
-        console.error(err);
-      res.status(500).send('Error saving table data');
-    } else 
-    {
-      console.log(docs);
-      res.send('Table data saved successfully');
-    }
-    }
-   )
+    const result = new InventoryTable({tableData});
+    result.save(err => {
+        if(err) {
+            res.send(err)
+        } else {
+            res.send( { message: "Successfully generated an FPS event." })
+        }
+    })
+    // let result;
+    // try
+    // {
+    // result= await InventoryTable.isnertMany(tableData);
+    // console.log(result);
+    // res.status(500).send(result);
+    // result.save();
+    // }
+    // catch (err) {
+    //     throw err;
+    // }
+
+    
+//    InventoryTable.insertMany(tableData, (err, docs) =>
+//    {
+//     if(err)
+//     {
+//         console.error(err);
+//       res.status(500).send('Error saving table data');
+//     } else 
+//     {
+//       console.log(docs);
+//       res.send('Table data saved successfully');
+//     }
+//     }
+//    )
    });
 
 app.post("/login",async (req,res)=>{
