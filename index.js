@@ -901,6 +901,16 @@ app.post("/GenerateEventRequest",(req,res)=>{
     })
 })
 
+//GET GENERATED EVENTS
+app.post("/GetGeneratedEvent",async(req,res)=>{
+    try {
+        const results = await GenEvent.find({});
+        res.send({message: "Got All Generated Events", genevent: results})
+    } catch (err) {
+        throw err;
+    }
+})
+
 
 
 app.listen(9002,() => {
