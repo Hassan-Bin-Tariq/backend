@@ -186,36 +186,36 @@ app.get('/cpolls', async (req, res) => {
   });
 
 
- app.post("/invent", async (req, res) => {
-    console.log("hassan")
-    const tableData =req.body;
-    var date = tableData.tableData[0][0]
-    var time =  tableData.tableData[1][1]
-    var am =  tableData.tableData[0][2]
-    var gadget =  tableData.tableData[0][3]
-    //console.log(tableData);
-    console.log(date);
-    console.log(time);
+//  app.post("/invent", async (req, res) => {
+//     console.log("hassan")
+//     const tableData =req.body;
+//     var date = tableData.tableData[0][0]
+//     var time =  tableData.tableData[1][1]
+//     var am =  tableData.tableData[0][2]
+//     var gadget =  tableData.tableData[0][3]
+//     //console.log(tableData);
+//     console.log(date);
+//     console.log(time);
 
-    for (int i =0; i<tableData.length;i++)
-    {
-        tableData.tableData[i][i];
+//     for (int i =0; i<tableData.length;i++)
+//     {
+//         tableData.tableData[i][i];
         
-    }
-    const result = new InventoryTable({
-        date, time, am, gadget
-    });
-    // const result = new InventoryTable({
-    //     date
-    // });
-    result.save(err => {
-        if(err) {
-            res.send(err)
-        } else {
-            res.send( { message: "Successfully generated an FPS event." })
-        }
-    })
-});
+//     }
+//     const result = new InventoryTable({
+//         date, time, am, gadget
+//     });
+//     // const result = new InventoryTable({
+//     //     date
+//     // });
+//     result.save(err => {
+//         if(err) {
+//             res.send(err)
+//         } else {
+//             res.send( { message: "Successfully generated an FPS event." })
+//         }
+//     })
+// });
 
 app.post("/login",async (req,res)=>{
     const { email, password} = req.body
@@ -937,11 +937,11 @@ app.post("/GetGeneratedEvent",async(req,res)=>{
     try {
         const results = await GenEvent.find({});
         res.send({message: "Got All Generated Events", genevent: results})
+        console.log("events fetched from db");
     } catch (err) {
         throw err;
     }
 })
-
 
 
 app.listen(9002,() => {
