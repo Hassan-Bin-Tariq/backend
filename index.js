@@ -47,13 +47,12 @@ mongoose.connect("mongodb+srv://hassan:hassan123@cluster0.brlttau.mongodb.net/Me
 
 //inventory table
 const InventorySchema = new mongoose.Schema({
-    column1:String,
-    column2:String,
-    column3:String,
-    column4:String
+    date:String,
+    time:String,
+    am:String,
+    gadget:String
     
   })
-
 const teacherSchema = new mongoose.Schema({
     name: String,
     email: String,
@@ -129,6 +128,14 @@ const GenEventSchema = new mongoose.Schema({
     status: String,
 })
 
+const pollSchema = new mongoose.Schema({
+    question: String,
+    options: [String],
+    responses: [String],
+  });
+
+
+
 const Student = new mongoose.model("Student", studentSchema)
 const Teacher = new mongoose.model("Teacher", teacherSchema)
 const Mentor = new mongoose.model("Mentor", MentorSchema)
@@ -142,15 +149,65 @@ const EBEmails = new mongoose.model("EBEmails", EBEmailsSchema)
 const GBEmails = new mongoose.model("GBEmails", GBEmailsSchema)
 const InventoryTable = new mongoose.model("InventoryTable",InventorySchema)
 const GenEvent = new mongoose.model("GenEvent", GenEventSchema)
+const Poll = new mongoose.model('Poll', pollSchema);
 
 //Routes
+//create poll
+app.post("/createpoll",async (req,res)=>
+{
+console.log("asd")
+const { question, options, response } = req.body;
+  
+const poll = await Poll.findOne({ question });
+    
+    if (!poll) {
+        const newPoll = new Poll({
+            question,
+            options,
+            responses: [response],
+        });
+    
+        await newPoll.save();
+    
+        return res.status(201).json(newPoll);
+        }
+    
+        poll.responses.push(response);
+    
+        await poll.save();
+    
+        console.log(poll)
+        res.json(poll);
+})
+app.get('/cpolls', async (req, res) => {
+    const polls = await Poll.find();
+  
+    res.json(polls);
+  });
+
 
  app.post("/invent", async (req, res) => {
     console.log("hassan")
     const tableData =req.body;
-  
-    console.log(tableData);
-    const result = new InventoryTable({tableData});
+    var date = tableData.tableData[0][0]
+    var time =  tableData.tableData[1][1]
+    var am =  tableData.tableData[0][2]
+    var gadget =  tableData.tableData[0][3]
+    //console.log(tableData);
+    console.log(date);
+    console.log(time);
+
+    for (int i =0; i<tableData.length;i++)
+    {
+        tableData.tableData[i][i];
+        
+    }
+    const result = new InventoryTable({
+        date, time, am, gadget
+    });
+    // const result = new InventoryTable({
+    //     date
+    // });
     result.save(err => {
         if(err) {
             res.send(err)
@@ -158,33 +215,7 @@ const GenEvent = new mongoose.model("GenEvent", GenEventSchema)
             res.send( { message: "Successfully generated an FPS event." })
         }
     })
-    // let result;
-    // try
-    // {
-    // result= await InventoryTable.isnertMany(tableData);
-    // console.log(result);
-    // res.status(500).send(result);
-    // result.save();
-    // }
-    // catch (err) {
-    //     throw err;
-    // }
-
-    
-//    InventoryTable.insertMany(tableData, (err, docs) =>
-//    {
-//     if(err)
-//     {
-//         console.error(err);
-//       res.status(500).send('Error saving table data');
-//     } else 
-//     {
-//       console.log(docs);
-//       res.send('Table data saved successfully');
-//     }
-//     }
-//    )
-   });
+});
 
 app.post("/login",async (req,res)=>{
     const { email, password} = req.body
