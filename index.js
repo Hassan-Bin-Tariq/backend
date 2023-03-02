@@ -52,7 +52,7 @@ const InventorySchema = new mongoose.Schema({
     am:String,
     gadget:String
     
-  })
+})
 const teacherSchema = new mongoose.Schema({
     name: String,
     email: String,
@@ -132,7 +132,7 @@ const pollSchema = new mongoose.Schema({
     question: String,
     options: [String],
     responses: [String],
-  });
+});
 
 
 
@@ -152,71 +152,6 @@ const GenEvent = new mongoose.model("GenEvent", GenEventSchema)
 const Poll = new mongoose.model('Poll', pollSchema);
 
 //Routes
-//create poll
-app.post("/createpoll",async (req,res)=>
-{
-console.log("asd")
-const { question, options, response } = req.body;
-  
-const poll = await Poll.findOne({ question });
-    
-    if (!poll) {
-        const newPoll = new Poll({
-            question,
-            options,
-            responses: [response],
-        });
-    
-        await newPoll.save();
-    
-        return res.status(201).json(newPoll);
-        }
-    
-        poll.responses.push(response);
-    
-        await poll.save();
-    
-        console.log(poll)
-        res.json(poll);
-})
-app.get('/cpolls', async (req, res) => {
-    const polls = await Poll.find();
-  
-    res.json(polls);
-  });
-
-
-//  app.post("/invent", async (req, res) => {
-//     console.log("hassan")
-//     const tableData =req.body;
-//     var date = tableData.tableData[0][0]
-//     var time =  tableData.tableData[1][1]
-//     var am =  tableData.tableData[0][2]
-//     var gadget =  tableData.tableData[0][3]
-//     //console.log(tableData);
-//     console.log(date);
-//     console.log(time);
-
-//     for (int i =0; i<tableData.length;i++)
-//     {
-//         tableData.tableData[i][i];
-        
-//     }
-//     const result = new InventoryTable({
-//         date, time, am, gadget
-//     });
-//     // const result = new InventoryTable({
-//     //     date
-//     // });
-//     result.save(err => {
-//         if(err) {
-//             res.send(err)
-//         } else {
-//             res.send( { message: "Successfully generated an FPS event." })
-//         }
-//     })
-// });
-
 app.post("/login",async (req,res)=>{
     const { email, password} = req.body
     let Emailss;
@@ -943,6 +878,54 @@ app.post("/GetGeneratedEvent",async(req,res)=>{
     }
 })
 
+//create poll
+app.post("/createpoll",async (req,res)=>
+{
+console.log("asd")
+const { question, options, response } = req.body;
+const poll = await Poll.findOne({ question });
+    
+    if (!poll) {
+        const newPoll = new Poll({
+            question,
+            options,
+            responses: [response],
+        });
+    
+        await newPoll.save();
+    
+        return res.status(201).json(newPoll);
+        }
+    
+        poll.responses.push(response);
+    
+        await poll.save();
+    
+        console.log(poll)
+        res.json(poll);
+})
+app.get('/cpolls', async (req, res) => {
+    const polls = await Poll.find();
+    res.json(polls);
+});
+
+//inventory routes
+app.post("/invent", async (req, res) => {
+    console.log("hassan")
+    const tableData = req.body;
+    var date = tableData.tableData[0][0];
+    console.log(date);
+    const result = new InventoryTable({
+        date
+    });
+    result.save(err => {
+        if(err) {
+            res.send(err)
+        } else {
+            res.send( { message: "Inventory updated." })
+        }
+    })
+});
 
 app.listen(9002,() => {
     console.log("BE started at port 9002")
