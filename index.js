@@ -128,6 +128,18 @@ const GenEventSchema = new mongoose.Schema({
     status: String,
 })
 
+//meeting schema
+const MeetingSchema = new mongoose.Schema({
+    callerName: String,
+    callerEmail: String,
+    callerID: String,
+    purpose: String,
+    agenda: String,
+    date: String,
+    Time: String,
+    venue: String,
+    status: String,
+})
 const pollSchema = new mongoose.Schema({
     question: String,
     options: [String],
@@ -149,6 +161,7 @@ const EBEmails = new mongoose.model("EBEmails", EBEmailsSchema)
 const GBEmails = new mongoose.model("GBEmails", GBEmailsSchema)
 const InventoryTable = new mongoose.model("InventoryTable",InventorySchema)
 const GenEvent = new mongoose.model("GenEvent", GenEventSchema)
+const ScheduleMeeting = new mongoose.model("ScheduleMeeting", MeetingSchema)
 const Poll = new mongoose.model('Poll', pollSchema);
 
 //Routes
