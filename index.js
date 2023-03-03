@@ -890,6 +890,35 @@ app.post("/GetGeneratedEvent",async(req,res)=>{
         throw err;
     }
 })
+//getmeeting
+app.post("/scheduleMeeting",async (req,res)=>{
+    console.log("hi dumb")
+    // const {purpose,callerName,callerEmail,callerID,agenda,date,Time,venue} = req.body
+    // ScheduleMeeting.findOne({purpose: purpose}, (err, meeting) => {
+    //     if(meeting){
+    //         res.send({message: "Meeting already scheduled"})
+    //     } 
+    //     else{
+    //         const user = new ScheduleMeeting({
+    //             callerName,
+    //             callerEmail,
+    //             callerID,
+    //             purpose,
+    //             agenda,
+    //             date,
+    //             Time,
+    //             venue
+    //         })
+    //         user.save(err => {
+    //             if(err) {
+    //                 res.send(err)
+    //             } else {
+    //                 res.send( { message: "Successfully scheduled meeting." })
+    //             }
+    //         })
+    //     }
+    // })
+})
 
 //create poll
 app.post("/createpoll",async (req,res)=>
