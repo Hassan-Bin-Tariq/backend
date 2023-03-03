@@ -137,9 +137,8 @@ const MeetingSchema = new mongoose.Schema({
     purpose: String,
     agenda: String,
     date: String,
-    Time: String,
+    MeetingTime: String,
     venue: String,
-    status: String,
 })
 const pollSchema = new mongoose.Schema({
     question: String,
@@ -894,7 +893,8 @@ app.post("/GetGeneratedEvent",async(req,res)=>{
 //getmeeting
 app.post("/scheduleMeeting", (req,res)=>{
     console.log("hi dumb")
-    const {purpose,callerName,callerEmail,callerID,agenda,date,Time,venue} = req.body
+    const {purpose,callerName,callerEmail,callerID,agenda,date,MeetingTime,venue} = req.body
+    console.log(MeetingTime)
     ScheduleMeeting.findOne({purpose: purpose}, (err, schedulemeeting) => {
         if(schedulemeeting){
             res.send({message: "Meeting already scheduled"})
@@ -907,7 +907,7 @@ app.post("/scheduleMeeting", (req,res)=>{
                 purpose,
                 agenda,
                 date,
-                Time,
+                MeetingTime,
                 venue,
             })
             console.log(user);
@@ -968,9 +968,15 @@ app.post("/invent", async (req, res) => {
     const tableData = req.body;
     //console.log(tableData);
     var date = tableData.tableData[0][0];
-    //console.log(date);
+    var time = tableData.tableData[0][1];
+    var am = tableData.tableData[0][2];
+    var gadget = tableData.tableData[0][3];
+    console.log(date);
     const result = new InventoryTable({
-        date
+        date,
+        time,
+        am,
+        gadget
     });
     result.save(err => {
         if(err) {
