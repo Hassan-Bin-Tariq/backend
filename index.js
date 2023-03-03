@@ -240,8 +240,12 @@ app.post("/login",async (req,res)=>{
         ExecutiveBody.findOne({ email: email}, (err, user) => {
             if(user){
                 if(password === user.password ) {
+                    if(email === 'hassantariq396@gmail.com')
                     res.send({message:"Photography Head", user: user})
-                } else {
+                    else if(email === 'roma@nu.edu.pk')
+                    res.send({message:"Logistics Head", user: user})
+                } 
+                else {
                     res.send({ message: "Password didn't match"})
                 }
             } else {
