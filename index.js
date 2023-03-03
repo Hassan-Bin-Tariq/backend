@@ -3,6 +3,7 @@ import cors from "cors"
 import mongoose from "mongoose"
 import { google } from "googleapis"
 import fs from "fs"
+import { table } from "console"
 
 var FolderID;
 
@@ -891,35 +892,45 @@ app.post("/GetGeneratedEvent",async(req,res)=>{
     }
 })
 //getmeeting
-app.post("/scheduleMeeting",async (req,res)=>{
+app.post("/scheduleMeeting", (req,res)=>{
     console.log("hi dumb")
-    // const {purpose,callerName,callerEmail,callerID,agenda,date,Time,venue} = req.body
-    // ScheduleMeeting.findOne({purpose: purpose}, (err, meeting) => {
-    //     if(meeting){
-    //         res.send({message: "Meeting already scheduled"})
-    //     } 
-    //     else{
-    //         const user = new ScheduleMeeting({
-    //             callerName,
-    //             callerEmail,
-    //             callerID,
-    //             purpose,
-    //             agenda,
-    //             date,
-    //             Time,
-    //             venue
-    //         })
-    //         user.save(err => {
-    //             if(err) {
-    //                 res.send(err)
-    //             } else {
-    //                 res.send( { message: "Successfully scheduled meeting." })
-    //             }
-    //         })
-    //     }
-    // })
+    const {purpose,callerName,callerEmail,callerID,agenda,date,Time,venue} = req.body
+    ScheduleMeeting.findOne({purpose: purpose}, (err, schedulemeeting) => {
+        if(schedulemeeting){
+            res.send({message: "Meeting already scheduled"})
+        } 
+        else{
+            const user = new ScheduleMeeting({
+                callerName,
+                callerEmail,
+                callerID,
+                purpose,
+                agenda,
+                date,
+                Time,
+                venue,
+            })
+            console.log(user);
+            user.save(err => {
+                if(err) {
+                    res.send(err)
+                } else {
+                    res.send( { message: "Successfully scheduled meeting." })
+                }
+            })
+        }
+    })
 })
-
+//getscheduled meeting
+app.post("/GetScheduledMeeting",async(req,res)=>{
+    try {
+        const results = await ScheduleMeeting.find({});
+        res.send({message: "Got All Meetings Scheduled", schedulemeeting: results})
+        console.log("meetings fetched from db");
+    } catch (err) {
+        throw err;
+    }
+})
 //create poll
 app.post("/createpoll",async (req,res)=>
 {
@@ -953,10 +964,11 @@ app.get('/cpolls', async (req, res) => {
 
 //inventory routes
 app.post("/invent", async (req, res) => {
-    console.log("hassan")
+    console.log("cry")
     const tableData = req.body;
+    //console.log(tableData);
     var date = tableData.tableData[0][0];
-    console.log(date);
+    //console.log(date);
     const result = new InventoryTable({
         date
     });
