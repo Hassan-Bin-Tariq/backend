@@ -1,7 +1,8 @@
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askopenfilenames
 import tkinter.messagebox
-
+import cv2
+import tempfile
 
 import urllib.request
 import numpy as np
@@ -73,7 +74,7 @@ def index():
             known_face_names = []
 
         # Load the new image and extract face encodings
-        known_face_encodings.append(new_face_encoding)
+        known_face_encodings.append(new_face_encoding[0])
         known_face_names.append(mail)
 
         # Save the updated model to file
@@ -204,8 +205,56 @@ async def data():
 @app.route('/UploadImagesPKL', methods=['POST'])
 def ProcessData():
 
-    print("called")
-    return ("Responded")
+    # Define the maximum image size in bytes
+    MAX_IMAGE_SIZE = 1000000
+
+    # Load the model from file
+    model_file_path = "./backend/face_recognition_model7.pkl"
+    with open(model_file_path, "rb") as f:
+        known_face_encodings, known_face_names = pickle.load(f)
+
+    tkinter.messagebox.showinfo("Title", "Your message here")
+    # Prompt user to select an image filee
+    new_image_path = askopenfilename()
+
+    # Load the new image and resize if necessary
+    new_image = cv2.imread(new_image_path)
+    new_image_size = os.path.getsize(new_image_path)
+    if new_image_size > MAX_IMAGE_SIZE:
+        # Create a temporary file to store the resized image
+        temp_file, temp_file_path = tempfile.mkstemp(suffix=".jpg")
+        os.close(temp_file)
+
+        # Calculate the resize factor to reduce the image to less than 1 MB
+        resize_factor = np.sqrt(MAX_IMAGE_SIZE / new_image_size)
+        resized_image = cv2.resize(
+            new_image, (0, 0), fx=resize_factor, fy=resize_factor)
+
+        # Write the resized image to the temporary file
+        cv2.imwrite(temp_file_path, resized_image)
+
+        # Load the resized image as the new image
+        new_image = cv2.imread(temp_file_path)
+
+    # Recognize faces in the new image
+    new_face_encodings = fr.face_encodings(new_image)
+    if len(new_face_encodings) > 0:
+        face_distances = fr.face_distance(
+            known_face_encodings, new_face_encodings[0])
+        print(face_distances)
+        best_match_index = np.argmin(face_distances)
+        if face_distances[best_match_index] < 0.6:
+            person_name = known_face_names[best_match_index]
+            print(f"The person in {new_image_path} is {person_name}")
+        else:
+            print(f"No matching person found in {new_image_path}")
+    else:
+        print(f"No face found in {new_image_path}")
+
+    # Delete the temporary file if it was created
+    if new_image_size > MAX_IMAGE_SIZE:
+        os.remove(temp_file_path)
+    return ("returned")
 
 
 if __name__ == "__main__":
