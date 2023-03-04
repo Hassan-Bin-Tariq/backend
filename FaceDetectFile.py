@@ -33,15 +33,17 @@ def data_get():
     return "This is text"
 
 
-@app.route('/FaceDetect')
+@app.route('/FaceDetect', methods=['POST'])
 def index():
+    data = request.get_json()
+    print(data)
     tkinter.messagebox.showinfo("Title", "Your message here")
 
     load_image = askopenfilename()
 
     # print(load_image)
     target_image = fr.load_image_file(load_image)
-    target_encoding = fr.face_encodings(target_image)
+    # target_encoding = fr.face_encodings(target_image)
 
     face_location = fr.face_locations(target_image)
 
@@ -77,7 +79,6 @@ def index():
     d = dict()
     d['path'] = load_image
     d['base'] = str(my_string)
-
     return d
 
 
