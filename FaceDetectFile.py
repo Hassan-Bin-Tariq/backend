@@ -205,6 +205,7 @@ async def data():
 @app.route('/UploadImagesPKL', methods=['POST'])
 def ProcessData():
 
+    path_email = dict()
     # Define the maximum image size in bytes
     MAX_IMAGE_SIZE = 1000000
 
@@ -246,6 +247,7 @@ def ProcessData():
             best_match_index = np.argmin(face_distances)
             if face_distances[best_match_index] < 0.6:
                 person_name = known_face_names[best_match_index]
+                path_email[new_image_path] = person_name
                 print(f"The person in {new_image_path} is {person_name}")
             else:
                 print(f"No matching person found in {new_image_path}")
@@ -255,7 +257,7 @@ def ProcessData():
         # Delete the temporary file if it was created
         if new_image_size > MAX_IMAGE_SIZE:
             os.remove(temp_file_path)
-    return ("returned")
+    return path_email
 
 
 if __name__ == "__main__":
