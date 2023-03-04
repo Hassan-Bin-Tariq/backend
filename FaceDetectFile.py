@@ -7,6 +7,8 @@ import urllib.request
 import numpy as np
 import asyncio
 
+import os
+import pickle
 
 import cv2 as cv
 import face_recognition as fr
@@ -33,31 +35,58 @@ def data_get():
     return "This is text"
 
 
+def PickleViewer():
+    with open('./backend/face_recognition_model7.pkl', 'rb') as f:
+        data = pickle.load(f)
+
+    # View the contents of the pickle file
+    print(data)
+
+
 @app.route('/FaceDetect', methods=['POST'])
 def index():
     data = request.get_json()
-    print(data)
+    Allmails = data.values()
+    for temp in Allmails:
+        mail = temp
+    print(mail)
     tkinter.messagebox.showinfo("Title", "Your message here")
 
     load_image = askopenfilename()
-
-    # print(load_image)
     target_image = fr.load_image_file(load_image)
 
-    # target_encoding = fr.face_encodings(target_image)
+    new_face_encoding = fr.face_encodings(target_image)
 
-    face_location = fr.face_locations(target_image)
+    # print(new_face_encoding)
+    if len(new_face_encoding) == 1:
 
-    if face_location == 1:
         print("face found")
-    elif (len(face_location) > 1):
+        # PickleViewer()
+        model_file_path = "./backend/face_recognition_model7.pkl"
+
+        # Load the existing model from file
+        if os.path.exists(model_file_path):
+            with open(model_file_path, 'rb') as f:
+                known_face_encodings, known_face_names = pickle.load(f)
+        else:
+            known_face_encodings = []
+            known_face_names = []
+
+        # Load the new image and extract face encodings
+        known_face_encodings.append(new_face_encoding)
+        known_face_names.append(mail)
+
+        # Save the updated model to file
+        with open(model_file_path, 'wb') as f:
+            pickle.dump((known_face_encodings, known_face_names), f)
+
+    elif (len(new_face_encoding) > 1):
         print("more then one face")
     else:
         print("No face")
 
     with open(load_image, "rb") as img_file:
         my_string = base64.b64encode(img_file.read())
-    # print(load_image)
 
     d = dict()
     d['path'] = load_image
