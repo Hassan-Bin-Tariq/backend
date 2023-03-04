@@ -990,7 +990,16 @@ app.post("/invent", async (req, res) => {
         }
     })
 });
-
+app.post("/GetInventory",async(req,res)=>{
+    try {
+        const results = await InventoryTable.find({});
+        res.send({message: "Fetching inventory data", showtableData: results})
+        console.log(showtableData)
+        //console.log("inventory fetched from db");
+    } catch (err) {
+        throw err;
+    }
+})
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
