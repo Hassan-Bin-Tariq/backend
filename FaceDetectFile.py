@@ -81,20 +81,6 @@ def index():
     return d
 
 
-# @app.route('/UploadImages')
-# def index2():
-#     all_images = []
-#     win32api.MessageBox(0, 'You have just run a python script on the page load!',
-#                         'Running a Python Script via Javascript', 0x00001000)
-#     load_image = askopenfilenames()
-#     for image in load_image:
-#         all_images.append(image)
-#     print(type(all_images))
-#     print(all_images)
-
-#     return all_images
-
-
 async def get_face_encodings(url):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     resp = await asyncio.get_event_loop().run_in_executor(None, urllib.request.urlopen, req)
@@ -200,6 +186,13 @@ async def data():
     await getSelected_face_encodings(all_images_paths, path_email, detected_faces, Present_Encodings, emails)
 
     return path_email, 200
+
+
+@app.route('/UploadImagesPKL', methods=['POST'])
+def ProcessData():
+
+    print("called")
+    return ("Responded")
 
 
 if __name__ == "__main__":
