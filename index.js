@@ -994,7 +994,7 @@ app.post("/GetInventory",async(req,res)=>{
     try {
         const results = await InventoryTable.find({});
         res.send({message: "Fetching inventory data", showtableData: results})
-        console.log(showtableData)
+        //console.log(showtableData)
         //console.log("inventory fetched from db");
     } catch (err) {
         throw err;
