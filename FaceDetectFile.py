@@ -3,6 +3,7 @@ from tkinter.filedialog import askopenfilename, askopenfilenames
 import tkinter.messagebox
 import cv2
 import tempfile
+import time
 
 import urllib.request
 import numpy as np
@@ -26,9 +27,6 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 CORS(app)
-
-
-# all_images_paths = []
 
 
 @app.route('/getdata')
@@ -206,39 +204,32 @@ async def data():
 def ProcessData():
 
     path_email = dict()
-    # Define the maximum image size in bytes
     MAX_IMAGE_SIZE = 1000000
 
-    # Load the model from file
     model_file_path = "./backend/face_recognition_model7.pkl"
     with open(model_file_path, "rb") as f:
         known_face_encodings, known_face_names = pickle.load(f)
 
-    # Prompt user to select image files
     tkinter.messagebox.showinfo("Title", "Your message here")
     new_image_paths = askopenfilenames()
 
     for new_image_path in new_image_paths:
-        # Load the new image and resize if necessary
+
         new_image = cv2.imread(new_image_path)
         new_image_size = os.path.getsize(new_image_path)
         if new_image_size > MAX_IMAGE_SIZE:
-            # Create a temporary file to store the resized image
+
             temp_file, temp_file_path = tempfile.mkstemp(suffix=".jpg")
             os.close(temp_file)
 
-            # Calculate the resize factor to reduce the image to less than 1 MB
             resize_factor = np.sqrt(MAX_IMAGE_SIZE / new_image_size)
             resized_image = cv2.resize(
                 new_image, (0, 0), fx=resize_factor, fy=resize_factor)
 
-            # Write the resized image to the temporary file
             cv2.imwrite(temp_file_path, resized_image)
 
-            # Load the resized image as the new image
             new_image = cv2.imread(temp_file_path)
 
-        # Recognize faces in the new image
         new_face_encodings = fr.face_encodings(new_image)
         if len(new_face_encodings) > 0:
             face_distances = fr.face_distance(
@@ -254,10 +245,55 @@ def ProcessData():
         else:
             print(f"No face found in {new_image_path}")
 
-        # Delete the temporary file if it was created
-        if new_image_size > MAX_IMAGE_SIZE:
+        if new_image_size > MAX_IMAGE_SIZE:  # Del temp file agr koi create hoi ha
             os.remove(temp_file_path)
+
     return path_email
+
+
+loop_running = False
+
+
+@app.route('/CameraReceive', methods=['POST'])
+def Camera():
+    global loop_running
+
+    on_value = request.get_data().decode('utf-8')
+    print(on_value)
+
+    if on_value == "ON" and not loop_running:  # start loop only if not already running
+        loop_running = True
+        folder_path = './backend/imageListner/2023_03_05'
+        latest_image = None
+
+        while loop_running:
+            print("Listening")
+
+            # get a list of all the image files in the folder and sort them by modification time
+            image_files = [f for f in os.listdir(
+                folder_path) if f.endswith('.JPG') or f.endswith('.png')]
+            image_files.sort(key=lambda f: os.path.getmtime(
+                os.path.join(folder_path, f)), reverse=True)
+
+            # get the path of the latest image file
+            latest_image_file = image_files[0] if len(
+                image_files) > 0 else None
+            latest_image_file_path = os.path.join(
+                folder_path, latest_image_file) if latest_image_file is not None else None
+
+            # check if the latest image is different from the previous latest image
+            if latest_image_file_path is not None and latest_image_file_path != latest_image:
+                # open the latest image file
+                os.startfile(latest_image_file_path)
+                latest_image = latest_image_file_path
+
+            # wait for 1 second before checking again
+            time.sleep(1)
+
+    elif on_value == "OFF" and loop_running:  # stop loop only if running
+        loop_running = False
+
+    return "returned"
 
 
 if __name__ == "__main__":
