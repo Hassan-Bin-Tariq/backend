@@ -889,7 +889,7 @@ app.post("/GetGeneratedEvent",async(req,res)=>{
     try {
         const results = await GenEvent.find({});
         res.send({message: "Got All Generated Events", genevent: results})
-        console.log("events fetched from db");
+        console.log("fps events fetched from db");
     } catch (err) {
         throw err;
     }
@@ -996,6 +996,15 @@ app.post("/GetInventory",async(req,res)=>{
         res.send({message: "Fetching inventory data", showtableData: results})
         //console.log(showtableData)
         //console.log("inventory fetched from db");
+    } catch (err) {
+        throw err;
+    }
+})
+app.post("/GetPolls",async(req,res)=>{
+    try {
+        const results = await Poll.find({});
+        res.send({message: "Got All Polls", poll: results})
+        console.log("polls fetched from db");
     } catch (err) {
         throw err;
     }
