@@ -244,6 +244,8 @@ app.post("/login",async (req,res)=>{
                     res.send({message:"Photography Head", user: user})
                     else if(email === 'roma@nu.edu.pk')
                     res.send({message:"Logistics Head", user: user})
+                    else if(email === 'muaz@nu.edu.pk')
+                    res.send({message:"General Secretary", user: user})
                 } 
                 else {
                     res.send({ message: "Password didn't match"})
