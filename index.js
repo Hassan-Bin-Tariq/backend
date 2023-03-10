@@ -973,11 +973,11 @@ app.post("/invent", async (req, res) => {
     console.log("cry")
     const tableData = req.body;
     //console.log(tableData);
-    var date = tableData.tableData[0][0];
+    var am = tableData.tableData[0][0];
     var time = tableData.tableData[0][1];
-    var am = tableData.tableData[0][2];
-    var gadget = tableData.tableData[0][3];
-    console.log(date);
+    var gadget = tableData.tableData[0][2];
+    var date = tableData.tableData[0][3];
+   // console.log(date);
     const result = new InventoryTable({
         date,
         time,
