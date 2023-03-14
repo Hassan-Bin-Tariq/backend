@@ -80,7 +80,8 @@ const studentSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
-    FolderID: String
+    FolderID: String,
+    PhoneNumber: String
 })
 
 const MentorSchema = new mongoose.Schema({
@@ -304,7 +305,7 @@ app.post("/register",async (req,res)=>{
     let teachermails = [];
     let EBmails = [];
     let GBmails = [];
-    const { name, email, password, slots, Duty,FolderID} = req.body
+    const { name, email, password, slots, Duty,FolderID,PhoneNumber} = req.body
 
     try { //getting all emails of teachers from back end and changing them into single list to check if teacher is registring
         Emailss = await AllteacherEmails.find({});
@@ -399,11 +400,13 @@ GeneralBody
                 })
             }
             else if (email.includes("nu.edu.pk") && email != Mentormail[0].email){
+                //console.log(PhoneNumber)
                 const user = new Student({
                     name,
                     email,
                     password,
-                    FolderID
+                    FolderID,
+                    PhoneNumber
                 })
                 user.save(err => {
                     if(err) {
