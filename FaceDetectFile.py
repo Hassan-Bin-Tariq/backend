@@ -4,14 +4,17 @@ import tkinter.messagebox
 import cv2
 import tempfile
 import time
-
+import pymongo
 import urllib.request
 import numpy as np
 import asyncio
-
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import os
 import pickle
-
+import keyboard
 import cv2 as cv
 import face_recognition as fr
 
@@ -200,6 +203,75 @@ async def data():
     return path_email, 200
 
 
+async def getNumber(name):
+
+    connection_string = 'mongodb+srv://hassan:hassan123@cluster0.brlttau.mongodb.net/Mediascape?retryWrites=true&w=majority'
+
+    client = pymongo.MongoClient(connection_string)
+
+    db = client['Mediascape']
+
+    collection = db['students']
+
+    result = collection.aggregate([
+        {'$match': {'email': name}},
+        {'$project': {'PhoneNumber': 1, '_id': 0}}
+    ])
+    for document in result:
+        return document['PhoneNumber']
+
+
+async def sendWhatsapp(image, num):
+
+    options = webdriver.ChromeOptions()  # remove
+    options.add_argument(
+        "user-data-dir=C:/Users/SmartCom/AppData/Local/Google/Chrome/User Data")  # remove
+    driver = webdriver.Chrome('chromedriver.exe', chrome_options=options)
+    driver.get("https://web.whatsapp.com/")
+    wait = WebDriverWait(driver, 100)
+
+    target = num  # Replace with the phone number of the contact you want to send the image to
+    extra = image
+    image_path = os.path.abspath(extra)
+
+    print(image_path)
+    search_bar_xpath = '//*[@id="side"]/div[1]/div/div/div[2]/div/div[1]/p'
+    search_bar = wait.until(
+        EC.presence_of_element_located((By.XPATH, search_bar_xpath)))
+    search_bar.click()
+
+    search_bar.send_keys(target)
+
+    time.sleep(2)
+
+    keyboard.press("tab")
+    keyboard.release("enter")
+    keyboard.press("tab")
+    keyboard.release("enter")
+
+    time.sleep(2)
+
+    attachment_xpath = '//div[@title="Attach"]'
+    attachment = wait.until(
+        EC.presence_of_element_located((By.XPATH, attachment_xpath)))
+    attachment.click()
+
+    time.sleep(2)
+
+    image_xpath = '//input[@type="file"]'
+    image = wait.until(EC.presence_of_element_located((By.XPATH, image_xpath)))
+    image.send_keys(image_path)
+
+    time.sleep(2)
+
+    keyboard.press("enter")
+    keyboard.release("enter")
+
+    time.sleep(4)
+
+    driver.quit()
+
+
 @app.route('/UploadImagesPKL', methods=['POST'])
 def ProcessData():
 
@@ -255,7 +327,7 @@ loop_running = False
 
 
 @app.route('/CameraReceive', methods=['POST'])
-def Camera():
+async def Camera():
     global loop_running
     path_email = dict()
     on_value = request.get_data().decode('utf-8')
@@ -335,6 +407,9 @@ def Camera():
                         path_email[full_path] = person_name
                         print(
                             f"The person in {new_image_path} is {person_name}")
+                        number = await getNumber(person_name)
+                        await sendWhatsapp(processed_image_file_path, number)
+                        print("RETURNED")
                         return path_email
                     else:
                         processed_image_file_path = new_image_path.replace(
