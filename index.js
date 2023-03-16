@@ -306,7 +306,7 @@ app.post("/register",async (req,res)=>{
     let EBmails = [];
     let GBmails = [];
     const { name, email, password, slots, Duty,FolderID,PhoneNumber} = req.body
-
+    console.log(PhoneNumber)
     try { //getting all emails of teachers from back end and changing them into single list to check if teacher is registring
         Emailss = await AllteacherEmails.find({});
 

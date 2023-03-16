@@ -223,27 +223,31 @@ async def getNumber(name):
 
 async def sendWhatsapp(image, num):
 
-    options = webdriver.ChromeOptions()  # remove
-    options.add_argument(
-        "user-data-dir=C:/Users/SmartCom/AppData/Local/Google/Chrome/User Data")  # remove
-    driver = webdriver.Chrome('chromedriver.exe', chrome_options=options)
+    options = webdriver.FirefoxOptions()
+    # add Firefox profile path here
+    options.profile = 'C:/Users/SmartCom/AppData/Roaming/Mozilla/Firefox/Profiles/vqfggny6.hassan'
+    # replace with the path to your Firefox binary file
+    options.binary_location = 'C:/Program Files/Mozilla Firefox/firefox.exe'
+    driver = webdriver.Firefox(
+        executable_path='geckodriver.exe', options=options)
     driver.get("https://web.whatsapp.com/")
     wait = WebDriverWait(driver, 100)
 
     target = num  # Replace with the phone number of the contact you want to send the image to
     extra = image
     image_path = os.path.abspath(extra)
+    number_of_times = 1  # No. of times to send the image
 
-    print(image_path)
     search_bar_xpath = '//*[@id="side"]/div[1]/div/div/div[2]/div/div[1]/p'
     search_bar = wait.until(
         EC.presence_of_element_located((By.XPATH, search_bar_xpath)))
     search_bar.click()
 
-    search_bar.send_keys(target)
+    for key in target:
+        keyboard.press(key)
+        keyboard.release(key)
 
     time.sleep(2)
-
     keyboard.press("tab")
     keyboard.release("enter")
     keyboard.press("tab")
@@ -267,7 +271,7 @@ async def sendWhatsapp(image, num):
     keyboard.press("enter")
     keyboard.release("enter")
 
-    time.sleep(4)
+    time.sleep(8)
 
     driver.quit()
 
@@ -335,7 +339,7 @@ async def Camera():
 
     if on_value == "ON" and not loop_running:  # start loop only if not already running
         loop_running = True
-        folder_path = './backend/imageListner/2023_03_05'
+        folder_path = './backend/imageListner/2023_03_16'
         latest_image = None
 
         while loop_running:
