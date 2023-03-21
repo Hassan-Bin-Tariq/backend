@@ -271,7 +271,7 @@ async def sendWhatsapp(image, num):
     keyboard.press("enter")
     keyboard.release("enter")
 
-    time.sleep(8)
+    time.sleep(12)
 
     driver.quit()
 
@@ -339,7 +339,7 @@ async def Camera():
 
     if on_value == "ON" and not loop_running:  # start loop only if not already running
         loop_running = True
-        folder_path = './backend/imageListner/2023_03_16'
+        folder_path = './backend/imageListner/2023_03_21'
         latest_image = None
 
         while loop_running:
