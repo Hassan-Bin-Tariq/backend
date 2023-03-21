@@ -1014,6 +1014,20 @@ app.post("/GetPolls",async(req,res)=>{
         throw err;
     }
 })
+
+app.post('/setResponse', (req, res) => {
+  const { item } = req.body;
+  const newData = Poll.findOne({ item });
+  newData.save((err, savedData) => {
+    if (err) {
+      res.status(500).send('Error saving data');
+    } else {
+      res.send('Data saved successfully');
+    }
+  });
+});
+
+
 app.listen(9002,() => {
     console.log("BE started at port 9002")
 })
