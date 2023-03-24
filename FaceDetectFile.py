@@ -271,7 +271,7 @@ async def sendWhatsapp(image, num):
     keyboard.press("enter")
     keyboard.release("enter")
 
-    time.sleep(12)
+    time.sleep(15)
 
     driver.quit()
 
