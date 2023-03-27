@@ -57,7 +57,8 @@ const InventorySchema = new mongoose.Schema({
 const teacherSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+    PhoneNumber: String
 })
 
 const TeacherEmailsSchema = new mongoose.Schema({
@@ -87,7 +88,8 @@ const studentSchema = new mongoose.Schema({
 const MentorSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+    PhoneNumber: String
 })
 
 const EventSchema = new mongoose.Schema({
@@ -106,7 +108,8 @@ const EventSchema = new mongoose.Schema({
 const EBSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+    PhoneNumber: String
 })
 
 const GBSchema = new mongoose.Schema({
@@ -115,6 +118,7 @@ const GBSchema = new mongoose.Schema({
     password: String,
     slots: Object,
     Duty: Object,
+    PhoneNumber: String
 })
 
 const GenEventSchema = new mongoose.Schema({
@@ -357,7 +361,8 @@ GeneralBody
                 const user = new Teacher({
                     name,
                     email,
-                    password
+                    password,
+                    PhoneNumber
                 })
                 user.save(err => {
                     if(err) {
@@ -372,7 +377,8 @@ GeneralBody
                 const user = new ExecutiveBody({
                     name,
                     email,
-                    password
+                    password,
+                    PhoneNumber
                 })
                 user.save(err => {
                     if(err) {
@@ -389,7 +395,8 @@ GeneralBody
                     email,
                     password,
                     slots,
-                    Duty
+                    Duty,
+                    PhoneNumber
                 })
                 user.save(err => {
                     if(err) {
@@ -421,7 +428,8 @@ GeneralBody
                 const user = new Mentor({
                     name,
                     email,
-                    password
+                    password,
+                    PhoneNumber
                 })
                 user.save(err => {
                     if(err) {
