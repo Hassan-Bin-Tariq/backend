@@ -1015,16 +1015,18 @@ app.post("/GetPolls",async(req,res)=>{
     }
 })
 
-app.post('/setResponse', (req, res) => {
-  const { item } = req.body;
-  const newData = Poll.findOne({ item });
-  newData.save((err, savedData) => {
-    if (err) {
-      res.status(500).send('Error saving data');
-    } else {
-      res.send('Data saved successfully');
-    }
-  });
+app.post('/setResponse', async (req, res) => {
+
+    //console.log(req.body);
+    const { item , PollQuestion} = req.body;
+    //console.log(item,PollQuestion)
+
+    const query = { 
+        question:PollQuestion,
+    };
+    const update = { $push: { responses: item}};
+    const options = {};
+    await Poll.updateOne(query, update, options);
 });
 
 
