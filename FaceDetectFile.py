@@ -308,22 +308,25 @@ def ProcessData():
 
         new_face_encodings = fr.face_encodings(new_image)
         if len(new_face_encodings) > 0:
-            face_distances = fr.face_distance(
-                known_face_encodings, new_face_encodings[0])
-            print(face_distances)
-            best_match_index = np.argmin(face_distances)
-            if face_distances[best_match_index] < 0.6:
-                person_name = known_face_names[best_match_index]
-                path_email[new_image_path] = person_name
-                print(f"The person in {new_image_path} is {person_name}")
-            else:
-                print(f"No matching person found in {new_image_path}")
+            for new_face_encoding in new_face_encodings:
+                face_distances = fr.face_distance(
+                    known_face_encodings, new_face_encoding)
+                # print(face_distances)
+                best_match_index = np.argmin(face_distances)
+                if face_distances[best_match_index] < 0.6:
+                    person_name = known_face_names[best_match_index]
+                    path_email[person_name] = new_image_path
+                    print("HEHE")
+                    # print(f"The person in {new_image_path} is {person_name}")
+                else:
+                    print(f"No matching person found in {new_image_path}")
         else:
             print(f"No face found in {new_image_path}")
 
         if new_image_size > MAX_IMAGE_SIZE:  # Del temp file agr koi create hoi ha
             os.remove(temp_file_path)
 
+    print(path_email)
     return path_email
 
 

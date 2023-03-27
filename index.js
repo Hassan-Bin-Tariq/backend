@@ -807,11 +807,12 @@ async function uploadToDesiredFolder(path,FolderName) {
 app.post("/UploadToDrive",async(req,res)=>{
     
     const {UploadData} = req.body
+    console.log("HASsan")
     console.log(UploadData);
     //await uploadToDesiredFolder("19F-0387@nu.edu.pk")
     for (const [key, value] of Object.entries(UploadData)) {
         console.log(key, value);
-        await uploadToDesiredFolder(key,value)
+        await uploadToDesiredFolder(value,key)
     }
 })
 
