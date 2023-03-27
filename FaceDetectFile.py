@@ -311,13 +311,13 @@ def ProcessData():
             for new_face_encoding in new_face_encodings:
                 face_distances = fr.face_distance(
                     known_face_encodings, new_face_encoding)
-                # print(face_distances)
+                print(face_distances)
                 best_match_index = np.argmin(face_distances)
                 if face_distances[best_match_index] < 0.6:
                     person_name = known_face_names[best_match_index]
                     path_email[person_name] = new_image_path
-                    print("HEHE")
-                    # print(f"The person in {new_image_path} is {person_name}")
+                    # print("HEHE")
+                    print(f"The person in {new_image_path} is {person_name}")
                 else:
                     print(f"No matching person found in {new_image_path}")
         else:
@@ -396,33 +396,37 @@ async def Camera():
                 # Recognize faces in the new image
                 new_face_encodings = fr.face_encodings(new_image)
                 if len(new_face_encodings) > 0:
-                    face_distances = fr.face_distance(
-                        known_face_encodings, new_face_encodings[0])
-                    print(face_distances)
-                    best_match_index = np.argmin(face_distances)
-                    if face_distances[best_match_index] < 0.6:
-                        person_name = known_face_names[best_match_index]
+                    for new_face_encoding in new_face_encodings:
+                        face_distances = fr.face_distance(
+                            known_face_encodings, new_face_encoding)
+                        print(face_distances)
+                        best_match_index = np.argmin(face_distances)
+                        if face_distances[best_match_index] < 0.6:
+                            person_name = known_face_names[best_match_index]
 
-                        processed_image_file_path = new_image_path.replace(
-                            '.JPG', '_processed.JPG').replace('.png', '_processed.png')
-                        os.rename(new_image_path, processed_image_file_path)
+                            processed_image_file_path = new_image_path.replace(
+                                '.JPG', '_processed.JPG').replace('.png', '_processed.png')
+                            os.rename(new_image_path,
+                                      processed_image_file_path)
 
-                        cwd = os.path.abspath(os.getcwd())
-                        full_path = os.path.join(
-                            cwd, processed_image_file_path[2:]).replace('\\', '/')
+                            cwd = os.path.abspath(os.getcwd())
+                            full_path = os.path.join(
+                                cwd, processed_image_file_path[2:]).replace('\\', '/')
 
-                        path_email[full_path] = person_name
-                        print(
-                            f"The person in {new_image_path} is {person_name}")
-                        number = await getNumber(person_name)
-                        await sendWhatsapp(processed_image_file_path, number)
-                        print("RETURNED")
-                        return path_email
-                    else:
-                        processed_image_file_path = new_image_path.replace(
-                            '.JPG', '_processed.JPG').replace('.png', '_processed.png')
-                        os.rename(new_image_path, processed_image_file_path)
-                        print(f"No matching person found in {new_image_path}")
+                            path_email[full_path] = person_name
+                            print(
+                                f"The person in {new_image_path} is {person_name}")
+                            number = await getNumber(person_name)
+                            await sendWhatsapp(processed_image_file_path, number)
+                            print("RETURNED")
+                            return path_email
+                        else:
+                            processed_image_file_path = new_image_path.replace(
+                                '.JPG', '_processed.JPG').replace('.png', '_processed.png')
+                            os.rename(new_image_path,
+                                      processed_image_file_path)
+                            print(
+                                f"No matching person found in {new_image_path}")
                 else:
                     processed_image_file_path = new_image_path.replace(
                         '.JPG', '_processed.JPG').replace('.png', '_processed.png')
