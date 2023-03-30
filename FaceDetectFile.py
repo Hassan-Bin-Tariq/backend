@@ -260,18 +260,18 @@ async def sendWhatsapp(image, num):
         EC.presence_of_element_located((By.XPATH, attachment_xpath)))
     attachment.click()
 
-    time.sleep(2)
+    time.sleep(5)
 
     image_xpath = '//input[@type="file"]'
     image = wait.until(EC.presence_of_element_located((By.XPATH, image_xpath)))
     image.send_keys(image_path)
 
-    time.sleep(2)
+    time.sleep(5)
 
     keyboard.press("enter")
     keyboard.release("enter")
 
-    time.sleep(15)
+    time.sleep(8)
 
     driver.quit()
 
