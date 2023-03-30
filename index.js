@@ -58,6 +58,7 @@ const teacherSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
+    FolderID: String,
     PhoneNumber: String
 })
 
@@ -89,6 +90,7 @@ const MentorSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
+    FolderID: String,
     PhoneNumber: String
 })
 
@@ -109,6 +111,7 @@ const EBSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
+    FolderID: String,
     PhoneNumber: String
 })
 
@@ -118,6 +121,7 @@ const GBSchema = new mongoose.Schema({
     password: String,
     slots: Object,
     Duty: Object,
+    FolderID: String,
     PhoneNumber: String
 })
 
@@ -362,6 +366,7 @@ GeneralBody
                     name,
                     email,
                     password,
+                    FolderID,
                     PhoneNumber
                 })
                 user.save(err => {
@@ -378,6 +383,7 @@ GeneralBody
                     name,
                     email,
                     password,
+                    FolderID,
                     PhoneNumber
                 })
                 user.save(err => {
@@ -396,6 +402,7 @@ GeneralBody
                     password,
                     slots,
                     Duty,
+                    FolderID,
                     PhoneNumber
                 })
                 user.save(err => {
@@ -429,6 +436,7 @@ GeneralBody
                     name,
                     email,
                     password,
+                    FolderID,
                     PhoneNumber
                 })
                 user.save(err => {
