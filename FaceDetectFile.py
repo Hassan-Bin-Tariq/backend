@@ -337,6 +337,7 @@ loop_running = False
 async def Camera():
     global loop_running
     path_email = dict()
+    persones = []
     on_value = request.get_data().decode('utf-8')
     print(on_value)
 
@@ -404,29 +405,28 @@ async def Camera():
                         if face_distances[best_match_index] < 0.6:
                             person_name = known_face_names[best_match_index]
 
-                            processed_image_file_path = new_image_path.replace(
-                                '.JPG', '_processed.JPG').replace('.png', '_processed.png')
-                            os.rename(new_image_path,
-                                      processed_image_file_path)
-
-                            cwd = os.path.abspath(os.getcwd())
-                            full_path = os.path.join(
-                                cwd, processed_image_file_path[2:]).replace('\\', '/')
-
-                            path_email[full_path] = person_name
                             print(
                                 f"The person in {new_image_path} is {person_name}")
                             number = await getNumber(person_name)
-                            await sendWhatsapp(processed_image_file_path, number)
+                            await sendWhatsapp(new_image_path, number)
+                            persones.append(person_name)
                             print("RETURNED")
-                            return path_email
+
                         else:
-                            processed_image_file_path = new_image_path.replace(
-                                '.JPG', '_processed.JPG').replace('.png', '_processed.png')
-                            os.rename(new_image_path,
-                                      processed_image_file_path)
                             print(
                                 f"No matching person found in {new_image_path}")
+                    processed_image_file_path = new_image_path.replace(
+                        '.JPG', '_processed.JPG').replace('.png', '_processed.png')
+                    print(new_image)
+                    print(processed_image_file_path)
+                    os.rename(new_image_path, processed_image_file_path)
+
+                    cwd = os.path.abspath(os.getcwd())
+                    full_path = os.path.join(
+                        cwd, processed_image_file_path[2:]).replace('\\', '/')
+                    for per in persones:
+                        path_email[per] = full_path
+                    return path_email
                 else:
                     processed_image_file_path = new_image_path.replace(
                         '.JPG', '_processed.JPG').replace('.png', '_processed.png')
