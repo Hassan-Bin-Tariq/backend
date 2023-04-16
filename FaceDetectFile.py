@@ -260,18 +260,18 @@ async def sendWhatsapp(image, num):
         EC.presence_of_element_located((By.XPATH, attachment_xpath)))
     attachment.click()
 
-    time.sleep(5)
+    time.sleep(6)
 
     image_xpath = '//input[@type="file"]'
     image = wait.until(EC.presence_of_element_located((By.XPATH, image_xpath)))
     image.send_keys(image_path)
 
-    time.sleep(5)
+    time.sleep(6)
 
     keyboard.press("enter")
     keyboard.release("enter")
 
-    time.sleep(8)
+    time.sleep(9)
 
     driver.quit()
 
@@ -343,7 +343,7 @@ async def Camera():
 
     if on_value == "ON" and not loop_running:  # start loop only if not already running
         loop_running = True
-        folder_path = './backend/imageListner/2023_03_21'
+        folder_path = './backend/imageListner/2023_03_31'
         latest_image = None
 
         while loop_running:
