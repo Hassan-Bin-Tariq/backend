@@ -95,6 +95,8 @@ def index():
     d['base'] = str(my_string)
     return d
 
+# tester
+
 
 async def get_face_encodings(url):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
