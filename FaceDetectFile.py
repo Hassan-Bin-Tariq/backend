@@ -96,6 +96,7 @@ def index():
     return d
 
 # tester
+# logo
 
 
 async def get_face_encodings(url):
