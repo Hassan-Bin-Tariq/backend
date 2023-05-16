@@ -346,7 +346,7 @@ async def Camera():
 
     if on_value == "ON" and not loop_running:  # start loop only if not already running
         loop_running = True
-        folder_path = './backend/imageListner/2023_03_31'
+        folder_path = './backend/imageListner/2023_05_16'
         latest_image = None
 
         while loop_running:
