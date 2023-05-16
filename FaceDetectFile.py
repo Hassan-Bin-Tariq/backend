@@ -17,6 +17,7 @@ import pickle
 import keyboard
 import cv2 as cv
 import face_recognition as fr
+from PIL import Image, ImageDraw, ImageFont
 
 # import win32api
 from flask import Flask, render_template, request, Response
@@ -24,6 +25,7 @@ from flask import jsonify
 from flask_cors import CORS
 from flask_apscheduler import APScheduler
 import base64
+
 
 app = Flask(__name__)
 scheduler = APScheduler()
@@ -279,9 +281,67 @@ async def sendWhatsapp(image, num):
     driver.quit()
 
 
-@app.route('/UploadImagesPKL', methods=['POST'])
-def ProcessData():
+async def attach_image(main_image_path, attach_image_path, output_image_path, text, size=(200, 200)):
+    print(text)
+    # Open the main image and the one to be attached
+    main_image = Image.open(main_image_path)
+    attach_image = Image.open(attach_image_path)
 
+    # Resize the image to be attached
+    attach_image = attach_image.resize(size)
+
+    # Convert the image to RGBA for transparency
+    attach_image = attach_image.convert("RGBA")
+
+    # Get the image data
+    data = attach_image.getdata()
+
+    # Create a new list to hold the image data
+    new_data = []
+
+    # Iterate over each pixel in the image
+    for item in data:
+        # Change all black (also shades of blacks)
+        # pixels to transparent
+        if item[0] == 0 and item[1] == 0 and item[2] == 0:
+            new_data.append((0, 0, 0, 0))
+        else:
+            new_data.append(item)
+
+    # Update the image data
+    attach_image.putdata(new_data)
+
+    # Calculate the position where the attached image should be placed
+    position = (main_image.width - attach_image.width,
+                main_image.height - attach_image.height + 60)
+
+    # Paste the attached image onto the main image
+    main_image.paste(attach_image, position, attach_image)
+
+    # Create an ImageDraw object
+    draw = ImageDraw.Draw(main_image)
+
+    # Specify the font, size, and color
+    font = ImageFont.truetype('arial.ttf', 15)
+    color = (0, 0, 0)  # white color
+
+    # Add the text to the image
+    textwidth, textheight = draw.textsize(text, font)
+    position = (main_image.width - textwidth) - \
+        50, (main_image.height - textheight) - 10  # position of the text
+    draw.text(position, text, color, font=font)
+
+    # print(output_image_path)
+    main_image.save(output_image_path)
+    # Save the resulting image
+    return (output_image_path)
+
+
+@app.route('/UploadImagesPKL', methods=['POST'])
+async def ProcessData():
+
+    Author = request.get_data().decode('utf-8')
+    print(Author)
     path_email = dict()
     MAX_IMAGE_SIZE = 1000000
 
@@ -318,7 +378,11 @@ def ProcessData():
                 best_match_index = np.argmin(face_distances)
                 if face_distances[best_match_index] < 0.6:
                     person_name = known_face_names[best_match_index]
-                    path_email[person_name] = new_image_path
+                    waterMarkedImg = await attach_image(
+                        new_image_path, "./backend/FPS.jpg", "./backend/output.jpg", Author)
+                    # print(waterMarkedImg)
+                    updated_string = waterMarkedImg.replace('/backend', '')
+                    path_email[person_name] = updated_string
                     # print("HEHE")
                     print(f"The person in {new_image_path} is {person_name}")
                 else:
@@ -341,6 +405,7 @@ async def Camera():
     global loop_running
     path_email = dict()
     persones = []
+    print(request)
     on_value = request.get_data().decode('utf-8')
     print(on_value)
 
