@@ -216,7 +216,10 @@ async def getNumber(name):
 
     db = client['Mediascape']
 
-    collection = db['students']
+    if name.startswith('f'):
+        collection = db['students']
+    else:
+        collection = db['teachers']
 
     result = collection.aggregate([
         {'$match': {'email': name}},
@@ -281,7 +284,7 @@ async def sendWhatsapp(image, num):
     driver.quit()
 
 
-async def attach_image(main_image_path, attach_image_path, output_image_path, text, size=(200, 200)):
+async def attach_image(main_image_path, attach_image_path, output_image_path, text, size=(300, 300)):
     print(text)
     # Open the main image and the one to be attached
     main_image = Image.open(main_image_path)
@@ -313,7 +316,7 @@ async def attach_image(main_image_path, attach_image_path, output_image_path, te
 
     # Calculate the position where the attached image should be placed
     position = (main_image.width - attach_image.width,
-                main_image.height - attach_image.height + 60)
+                main_image.height - attach_image.height)
 
     # Paste the attached image onto the main image
     main_image.paste(attach_image, position, attach_image)
@@ -322,13 +325,13 @@ async def attach_image(main_image_path, attach_image_path, output_image_path, te
     draw = ImageDraw.Draw(main_image)
 
     # Specify the font, size, and color
-    font = ImageFont.truetype('arial.ttf', 15)
+    font = ImageFont.truetype('arial.ttf', 25)
     color = (0, 0, 0)  # white color
 
     # Add the text to the image
     textwidth, textheight = draw.textsize(text, font)
     position = (main_image.width - textwidth) - \
-        50, (main_image.height - textheight) - 10  # position of the text
+        50, (main_image.height - textheight) - 20  # position of the text
     draw.text(position, text, color, font=font)
 
     # print(output_image_path)
@@ -411,7 +414,7 @@ async def Camera():
 
     if on_value == "ON" and not loop_running:  # start loop only if not already running
         loop_running = True
-        folder_path = './backend/imageListner/2023_05_16'
+        folder_path = './backend/imageListner/2023_05_17'
         latest_image = None
 
         while loop_running:
